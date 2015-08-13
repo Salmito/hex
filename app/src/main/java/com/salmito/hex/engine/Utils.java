@@ -5,7 +5,7 @@ import android.opengl.GLES20;
 /**
  * Created by tiago on 8/13/2015.
  */
-public class Shader {
+public class Utils {
 
     static public int createShader(String source, int type) {
         int handle;
@@ -24,5 +24,11 @@ public class Shader {
             throw new RuntimeException("Unable to compile Shader Object: glGetError: " + log);
         }
         return handle;
+    }
+
+    static public int createBuffer() {
+        int[] i={0};
+        GLES20.glGenBuffers(1,i,0);
+        return i[0];
     }
 }

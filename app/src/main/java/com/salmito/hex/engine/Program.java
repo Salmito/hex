@@ -31,8 +31,8 @@ public abstract class Program implements Thing {
     }
 
     public static int compileProgram(String vertex, String fragment) {
-        int vertexShaderHandle = Shader.createShader(vertex, GLES20.GL_VERTEX_SHADER);
-        int fragmentShaderHandle = Shader.createShader(fragment, GLES20.GL_FRAGMENT_SHADER);
+        int vertexShaderHandle = Utils.createShader(vertex, GLES20.GL_VERTEX_SHADER);
+        int fragmentShaderHandle = Utils.createShader(fragment, GLES20.GL_FRAGMENT_SHADER);
 
         int programHandle = GLES20.glCreateProgram();
 
@@ -88,7 +88,7 @@ public abstract class Program implements Thing {
         return i;
     }
 
-    public int getAttr(String a) {
+    public int getAttrib(String a) {
         Integer i = attribs.get(a);
         if (i == null) throw new RuntimeException("Attrib '" + a + "' not defined");
         GLES20.glEnableVertexAttribArray(i);

@@ -6,6 +6,7 @@ import android.os.SystemClock;
 
 import com.salmito.hex.engine.Program;
 import com.salmito.hex.programs.hex.HexProgram;
+import com.salmito.hex.programs.simple.SimpleProgram;
 
 import java.util.ArrayList;
 
@@ -37,8 +38,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
         lastTime = now;
 
         for (Program p : getPrograms()) {
-            p.use();
             cleanup();
+            p.use();
             p.draw(dt);
         }
     }
@@ -62,8 +63,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         lastTime = SystemClock.uptimeMillis();
 
-        MainRenderer.getPrograms().add(HexProgram.getProgram());
-
+        getPrograms().add(SimpleProgram.getProgram());
+        getPrograms().add(HexProgram.getProgram());
     }
 
 }

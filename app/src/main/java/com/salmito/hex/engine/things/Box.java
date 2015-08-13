@@ -217,12 +217,14 @@ public class Box implements Thing {
         Matrix.setIdentityM(program.getmModelMatrix(), 0);
         Matrix.translateM(program.getmModelMatrix(), 0, center.getX(), center.getY(), center.getZ());
 
-        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttr("a_Position"), 3, GLES20.GL_FLOAT, false, 3 * MainRenderer.mBytesPerFloat, mVertices);
-        GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttr("a_Position"));
-        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttr("a_Color"), 4, GLES20.GL_FLOAT, false, 4 * MainRenderer.mBytesPerFloat, mColors);
-        GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttr("a_Color"));
+        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 3 * MainRenderer.mBytesPerFloat, mVertices);
+        GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Position"));
+        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 4 * MainRenderer.mBytesPerFloat, mColors);
+        GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Color"));
+
         Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmViewMatrix(), 0, program.getmModelMatrix(), 0);
         Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmProjectionMatrix(), 0, program.getmMVPMatrix(), 0);
+
         GLES20.glUniformMatrix4fv(program.getUniform("u_MVPMatrix"), 1, false, program.getmMVPMatrix(), 0);
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, mIndices);
     }

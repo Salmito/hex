@@ -91,8 +91,8 @@ public class Hexagon implements Thing {
         mHexagonVertices.position(0);
         mHexagonIndices.position(0);
         mHexagonIndicesWire.position(0);
-        GLES20.glVertexAttribPointer(program.getAttr("a_Position"), mPositionDataSize, GLES20.GL_FLOAT, false, mStrideBytes, mHexagonVertices);
-        GLES20.glEnableVertexAttribArray(program.getAttr("a_Position"));
+        GLES20.glVertexAttribPointer(program.getAttrib("a_Position"), mPositionDataSize, GLES20.GL_FLOAT, false, mStrideBytes, mHexagonVertices);
+        GLES20.glEnableVertexAttribArray(program.getAttrib("a_Position"));
 
         float xf = xOff * coordinates.getQ() * 2;
         final float yf = yOff * coordinates.getR() * 3;
@@ -121,8 +121,8 @@ public class Hexagon implements Thing {
         }
         HexColor.setColor(color);
 
-        GLES20.glVertexAttribPointer(program.getAttr("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, HexColor.mColorStrideBytes, HexColor.mHexagonColors);
-        GLES20.glEnableVertexAttribArray(program.getAttr("a_Color"));
+        GLES20.glVertexAttribPointer(program.getAttrib("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, HexColor.mColorStrideBytes, HexColor.mHexagonColors);
+        GLES20.glEnableVertexAttribArray(program.getAttrib("a_Color"));
 
         Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmViewMatrix(), 0, program.getmModelMatrix(), 0);
         Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmProjectionMatrix(), 0, program.getmMVPMatrix(), 0);
@@ -131,8 +131,8 @@ public class Hexagon implements Thing {
         GLES20.glDrawElements(GLES20.GL_TRIANGLE_FAN, indices.length, GLES20.GL_UNSIGNED_SHORT, mHexagonIndices);
 
         HexColor.setColor(HexColor.WHITE);
-        GLES20.glVertexAttribPointer(program.getAttr("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, HexColor.mColorStrideBytes, HexColor.mHexagonColors);
-        GLES20.glEnableVertexAttribArray(program.getAttr("a_Color"));
+        GLES20.glVertexAttribPointer(program.getAttrib("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, HexColor.mColorStrideBytes, HexColor.mHexagonColors);
+        GLES20.glEnableVertexAttribArray(program.getAttrib("a_Color"));
         GLES20.glDrawElements(GLES20.GL_LINE_LOOP, indicesWire.length, GLES20.GL_UNSIGNED_SHORT, mHexagonIndicesWire);
     }
 
