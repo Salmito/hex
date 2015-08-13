@@ -1,4 +1,4 @@
-package com.salmito.hex.main;
+package com.salmito.hex.engine;
 
 import android.opengl.GLES20;
 

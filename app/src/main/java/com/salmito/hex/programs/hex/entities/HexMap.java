@@ -1,18 +1,23 @@
-package com.salmito.hex.entities;
+package com.salmito.hex.programs.hex.entities;
 
 import android.os.SystemClock;
+
+import com.salmito.hex.engine.Thing;
+import com.salmito.hex.programs.hex.HexProgram;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class HexMap {
+public class HexMap implements Thing {
 
     private final int size;
+    private final HexProgram program;
     private Map<Coordinates, Hexagon> map;
 
-    public HexMap(int size) {
+    public HexMap(HexProgram program, int size) {
         this.size = size;
         map = new HashMap<Coordinates, Hexagon>();
+        this.program = program;
     }
 
     public int getSize() {
@@ -36,7 +41,7 @@ public class HexMap {
         final Coordinates p = new Coordinates(i, j);
         Hexagon hex = map.get(p);
         if (hex == null) {
-            hex = new Hexagon(p.getQ(),p.getR());
+            hex = new Hexagon(program, p.getQ(), p.getR());
             map.put(p, hex);
         }
         return hex;
@@ -45,18 +50,22 @@ public class HexMap {
     public Hexagon getHexagon(Coordinates p) {
         Hexagon hex = map.get(p);
         if (hex == null) {
-            hex = new Hexagon(p.getQ(),p.getR());
+            hex = new Hexagon(program, p.getQ(), p.getR());
             map.put(p, hex);
         }
         return hex;
     }
 
-    public void draw() {
+    @Override
+    public void draw(long time) {
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
-                if(hasHexagon(i,j)) getHexagon(i,j).draw();
+                if (hasHexagon(i, j)) getHexagon(i, j).draw(time);
+    }
 
-
+    @Override
+    public void clean() {
+        map.clear();
     }
 
     public static class Coordinates {

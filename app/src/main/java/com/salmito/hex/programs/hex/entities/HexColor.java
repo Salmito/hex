@@ -1,4 +1,4 @@
-package com.salmito.hex.entities;
+package com.salmito.hex.programs.hex.entities;
 
 import com.salmito.hex.main.MainRenderer;
 

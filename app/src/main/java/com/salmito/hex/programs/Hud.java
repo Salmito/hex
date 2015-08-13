@@ -1,13 +1,17 @@
-package com.salmito.hex.main;
+package com.salmito.hex.programs;
 
 import android.opengl.GLES20;
 import android.os.SystemClock;
+
+import com.salmito.hex.main.MainRenderer;
+import com.salmito.hex.game.Shaders;
+import com.salmito.hex.engine.Target;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import static com.salmito.hex.main.MainRenderer.compileProgram;
+//import static com.salmito.hex.main.MainRenderer.compileProgram;
 
 /**
  * Created by Tiago on 10/08/2015.
@@ -54,7 +58,7 @@ public class Hud {
         frontTarget = Target.createTarget(1920, 1080);
         backTarget = Target.createTarget(1920, 1080);
 
-        this.secondProgramHandle = compileProgram(Shaders.secondVertexShader, Shaders.secondFragmentShader);
+     //   this.secondProgramHandle = compileProgram(Shaders.secondVertexShader, Shaders.secondFragmentShader);
 
         this.secondPositionHandle = GLES20.glGetAttribLocation(secondProgramHandle, "position");
         GLES20.glEnableVertexAttribArray(secondPositionHandle);
@@ -71,7 +75,7 @@ public class Hud {
  //       GLES20.glVertexAttribPointer(secondPositionHandle, 2, GLES20.GL_FLOAT, false, 0, mSecondVertices);
   //      GLES20.glEnableVertexAttribArray(secondPositionHandle);
 
-        hudProgramHandle = compileProgram(Shaders.hudVertexShader, Shaders.hudFragmentShader);
+      //  hudProgramHandle = compileProgram(Shaders.hudVertexShader, Shaders.hudFragmentShader);
         GLES20.glUseProgram(hudProgramHandle);
 
         this.hudPositionHandle = GLES20.glGetAttribLocation(hudProgramHandle, "position");
