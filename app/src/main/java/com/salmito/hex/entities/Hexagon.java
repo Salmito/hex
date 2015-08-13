@@ -46,7 +46,7 @@ public class Hexagon {
     private HexMap.Coordinates coordinates;
 
     public Hexagon(int r, int q) {
-        this.coordinates=new HexMap.Coordinates(r,q);
+        this.coordinates = new HexMap.Coordinates(r, q);
     }
 
     public Hexagon(int color) {
@@ -95,11 +95,10 @@ public class Hexagon {
         GLES20.glUniformMatrix4fv(MainRenderer.mMVPMatrixHandle, 1, false, MainRenderer.mMVPMatrix, 0);
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLE_FAN, indices.length, GLES20.GL_UNSIGNED_SHORT, mHexagonIndices);
-        HexColor.setColor(HexColor.BLACK);
+        HexColor.setColor(HexColor.WHITE);
         GLES20.glVertexAttribPointer(MainRenderer.mColorHandle, HexColor.mColorDataSize, GLES20.GL_FLOAT, false, HexColor.mColorStrideBytes, HexColor.mHexagonColors);
         GLES20.glEnableVertexAttribArray(MainRenderer.mColorHandle);
         GLES20.glDrawElements(GLES20.GL_LINE_LOOP, indicesWire.length, GLES20.GL_UNSIGNED_SHORT, mHexagonIndicesWire);
-
     }
 
     public float getRotateAngle() {

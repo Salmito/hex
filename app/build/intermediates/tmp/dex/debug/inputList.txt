@@ -1,2 +1,3 @@
-C:\Users\tiago\AndroidstudioProjects\hex\app\build\intermediates\classes\debug
-C:\Users\tiago\AndroidstudioProjects\hex\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-a647eed75a7e28b914e5b24ce3d150be3d1fb1db.jar
+C:\Users\Tiago\Documents\hex\app\build\intermediates\classes\debug
+C:\Users\Tiago\Documents\hex\app\build\intermediates\pre-dexed\debug\luaj-jse-3.0-d5556e8730f871223d235154da41282dc34368b7.jar
+C:\Users\Tiago\Documents\hex\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-599a9350131c426df490550e680c1917de879159.jar

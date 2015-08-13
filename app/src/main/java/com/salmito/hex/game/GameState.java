@@ -23,7 +23,7 @@ public class GameState {
     public static GameState getState() {
         if (state == null) {
             state = new GameState();
-            map = new HexMap(10);
+            map = new HexMap(100);
             camera = new MainCamera();
             renderer = new MainRenderer();
         }
