@@ -1,13 +1,12 @@
 package com.salmito.hex.programs.hex;
 
-import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 
 import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.Box;
-import com.salmito.hex.engine.things.Point;
+import com.salmito.hex.engine.things.Point3f;
 import com.salmito.hex.programs.hex.entities.HexColor;
 import com.salmito.hex.programs.hex.entities.HexMap;
 import com.salmito.hex.programs.hex.entities.Hexagon;
@@ -59,7 +58,7 @@ public class HexProgram extends Program {
     private final static ArrayList<Thing> things = new ArrayList<Thing>();
     private static HexProgram currentProgram;
     private static final HexMap map=new HexMap(HexProgram.getProgram(), 100);;
-    private static final Box box=new Box(new Point(0f, 0f, 0f), 1f, 1f, 1f);;
+    private static final Box box=new Box(new Point3f(0f, 0f, 0f), 1f, 1f, 1f);;
     public float previousX, previousY;
     private int i = 0;
 
@@ -112,8 +111,6 @@ public class HexProgram extends Program {
         super.surfaceChanged(width, height);
 
         this.use();
-
-
 
         mView[0] = 0;
         mView[1] = 0;
@@ -178,6 +175,7 @@ public class HexProgram extends Program {
                 } else {
                     if (e.getPointerCount() == 2) {
                         getCamera().zoom(dy / 100.0f);
+                        System.out.println("Screen limits: "+getScreenBottom()+" -> "+getScreenTop());
                     }
                 }
                 break;
@@ -187,12 +185,21 @@ public class HexProgram extends Program {
                 System.out.println("tap on: " + (t.getQ()) + " " + (t.getR()) + " " + getMap().hasHexagon(t));
 
                 touch(t);
-                box.move(new Point(coordinates));
+                box.move(new Point3f(coordinates));
                 break;
         }
         previousX = x;
         previousY = y;
     }
+
+    public Point3f getScreenBottom() {
+        return new Point3f(getCamera().unproject(0, height));
+    }
+    public Point3f getScreenTop() {
+        return new Point3f(getCamera().unproject(width, 0));
+    }
+
+
 
     private void touch(final HexMap.Coordinates t, final int ttl) {
         if (t.getR() >= 0 && t.getQ() >= 0) {
@@ -208,7 +215,7 @@ public class HexProgram extends Program {
                         t1.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                System.out.println("timer");
+                                //System.out.println("timer");
                                 touch(new HexMap.Coordinates(t.getQ() + n[0], t.getR() + n[1]), ttl - 1);
                             }
                         }, 500);

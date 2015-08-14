@@ -1,11 +1,13 @@
-package com.salmito.hex.engine;
+package com.salmito.hex.util;
 
 import android.opengl.GLES20;
+
+import java.nio.FloatBuffer;
 
 /**
  * Created by tiago on 8/13/2015.
  */
-public class Utils {
+public class GLHelper {
 
     static public int createShader(String source, int type) {
         int handle;
@@ -31,4 +33,5 @@ public class Utils {
         GLES20.glGenBuffers(1,i,0);
         return i[0];
     }
+
 }

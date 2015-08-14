@@ -3,6 +3,8 @@ package com.salmito.hex.engine;
 import android.opengl.GLES20;
 import android.view.MotionEvent;
 
+import com.salmito.hex.util.GLHelper;
+
 import java.util.HashMap;
 
 /**
@@ -34,8 +36,8 @@ public abstract class Program implements Thing {
     }
 
     public static int compileProgram(String vertex, String fragment) {
-        int vertexShaderHandle = Utils.createShader(vertex, GLES20.GL_VERTEX_SHADER);
-        int fragmentShaderHandle = Utils.createShader(fragment, GLES20.GL_FRAGMENT_SHADER);
+        int vertexShaderHandle = GLHelper.createShader(vertex, GLES20.GL_VERTEX_SHADER);
+        int fragmentShaderHandle = GLHelper.createShader(fragment, GLES20.GL_FRAGMENT_SHADER);
 
         int programHandle = GLES20.glCreateProgram();
 

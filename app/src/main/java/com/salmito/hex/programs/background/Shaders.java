@@ -1,4 +1,4 @@
-package com.salmito.hex.game;
+package com.salmito.hex.programs.background;
 
 /**
  * Created by Tiago on 10/08/2015.

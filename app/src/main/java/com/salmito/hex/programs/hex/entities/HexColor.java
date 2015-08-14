@@ -18,7 +18,9 @@ public class HexColor {
 
     public static final int mColorDataSize = 4;
     public static final int mColorStrideBytes = mColorDataSize * MainRenderer.mBytesPerFloat;
-    public static final int mColorSize = 28;
+    public static final int mColorSize = 7;
+    public static final int mColorByteSize = mColorDataSize * mColorSize;
+
     public static int offset = 0;
     private static final float colors[] = {
             //RED
@@ -88,7 +90,7 @@ public class HexColor {
     public static final FloatBuffer mHexagonColors = ByteBuffer.allocateDirect(colors.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(colors);
 
     public static void setColor(int color) {
-        offset=color*mColorSize;
+        offset=color*mColorByteSize*MainRenderer.mBytesPerFloat;
         //mHexagonColors.position(color * mColorSize);
     }
 

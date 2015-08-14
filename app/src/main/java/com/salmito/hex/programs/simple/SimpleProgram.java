@@ -4,7 +4,7 @@ package com.salmito.hex.programs.simple;
 import android.opengl.GLES20;
 
 import com.salmito.hex.engine.Program;
-import com.salmito.hex.engine.Utils;
+import com.salmito.hex.util.GLHelper;
 import com.salmito.hex.main.MainRenderer;
 
 import java.nio.ByteBuffer;
@@ -43,7 +43,7 @@ public class SimpleProgram extends Program {
     public SimpleProgram() {
         super(vertex, fragment, new String[]{}, new String[]{"a_position"});
         this.use();
-        this.buffer = Utils.createBuffer();
+        this.buffer = GLHelper.createBuffer();
         mVertices.position(0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffer);
         GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertices.capacity()*MainRenderer.mBytesPerFloat, mVertices, GLES20.GL_STATIC_DRAW);

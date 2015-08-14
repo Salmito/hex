@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.main.MainRenderer;
 import com.salmito.hex.programs.hex.HexProgram;
+import com.salmito.hex.util.GLHelper;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -129,23 +130,47 @@ public class Box implements Thing {
     private int indicesBuffer;
     private int normalsBuffer;
     private int verticesBuffer;
-    private Point center;
+    private int colorBuffer;
+    private Point3f center;
 
-    public Box(Point center, float dx, float dy, float dz) {
+    public Box(Point3f center, float dx, float dy, float dz) {
         this.center = center;
+        int[] i = new int[3];
+        GLES20.glGenBuffers(3, i, 0);
+        verticesBuffer = 0;
+        indicesBuffer = i[0];
+        normalsBuffer = i[1];
+        colorBuffer = i[2];
+
         this.set(dx, dy, dz);
+
+        mColors.position(0);
+        mIndices.position(0);
+        mNormals.position(0);
+
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndices.capacity() * MainRenderer.mBytesPerShort, mIndices, GLES20.GL_STATIC_DRAW);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalsBuffer);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mNormals.capacity() * MainRenderer.mBytesPerFloat, mNormals, GLES20.GL_STATIC_DRAW);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBuffer);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mColors.capacity() * MainRenderer.mBytesPerFloat, mColors, GLES20.GL_DYNAMIC_DRAW);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    public Box(Point center) {
+    public Box(Point3f center) {
         this(center, 1f, 1f, 1f);
     }
 
     public Box() {
-        this(new Point(0f, 0f, 0f));
+        this(new Point3f(0f, 0f, 0f));
     }
 
-    public void move(Point center) {
-        this.center=center;
+    public void move(Point3f center) {
+        this.center = center;
     }
 
     public void set(float dx, float dy, float dz) {
@@ -194,39 +219,44 @@ public class Box implements Thing {
                 dx, dy, -dz,
         };
         this.mVertices = ByteBuffer.allocateDirect(vertices.length * MainRenderer.mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
-
-        //if (verticesBuffer != 0) {
-//            GLES20.glDeleteBuffers(1, new int[]{verticesBuffer}, 0);
-//        }
-
-//        int[] i = {0};
-//        GLES20.glGenBuffers(1, i, 0);
-//        verticesBuffer = i[0];
-
-//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
-//        mVertices.position(0);
-//        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertices.length, mVertices, GLES20.GL_STATIC_DRAW);
+        mVertices.position(0);
+        if (verticesBuffer == 0) {
+            verticesBuffer = GLHelper.createBuffer();
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertices.capacity() * MainRenderer.mBytesPerFloat, mVertices, GLES20.GL_DYNAMIC_DRAW);
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        } else {
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
+            GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, mVertices.capacity() * MainRenderer.mBytesPerFloat, mVertices);
+            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        }
     }
 
     @Override
     public void draw(long time) {
-        mVertices.position(0);
-        mColors.position(0);
-        mIndices.position(0);
+
+
         HexProgram program = HexProgram.getProgram();
         Matrix.setIdentityM(program.getmModelMatrix(), 0);
         Matrix.translateM(program.getmModelMatrix(), 0, center.getX(), center.getY(), center.getZ());
 
-        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 3 * MainRenderer.mBytesPerFloat, mVertices);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
+        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, 0);
         GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Position"));
-        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 4 * MainRenderer.mBytesPerFloat, mColors);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBuffer);
+        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, 0);
         GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Color"));
 
         Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmViewMatrix(), 0, program.getmModelMatrix(), 0);
         Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmProjectionMatrix(), 0, program.getmMVPMatrix(), 0);
 
         GLES20.glUniformMatrix4fv(program.getUniform("u_MVPMatrix"), 1, false, program.getmMVPMatrix(), 0);
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, mIndices);
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
+
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.salmito.hex.programs.hex.entities;
 import android.os.SystemClock;
 
 import com.salmito.hex.engine.Thing;
+import com.salmito.hex.engine.things.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
 
 import java.util.HashMap;
@@ -58,6 +59,8 @@ public class HexMap implements Thing {
 
     @Override
     public void draw(long time) {
+        program.getScreenTop();
+        program.getScreenBottom();
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
                 if (hasHexagon(i, j)) getHexagon(i, j).draw(time);
