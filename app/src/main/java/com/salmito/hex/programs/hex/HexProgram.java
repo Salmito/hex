@@ -55,20 +55,20 @@ public class HexProgram extends Program {
     private static final HexCamera camera = new HexCamera(mViewMatrix, mView, mProjectionMatrix) {{
         this.lookAt();
     }};
-    ;
+
     private final static ArrayList<Thing> things = new ArrayList<Thing>();
     private static HexProgram currentProgram;
-    private final HexMap map;
-    private final Box box;
+    private static final HexMap map=new HexMap(HexProgram.getProgram(), 100);;
+    private static final Box box=new Box(new Point(0f, 0f, 0f), 1f, 1f, 1f);;
     public float previousX, previousY;
     private int i = 0;
 
 
     public HexProgram() {
         super(mainVertexShader, mainFragmentShader, new String[]{"u_MVPMatrix"}, new String[]{"a_Position", "a_Color"});
+        System.out.println("Creating Hex Program");
         camera.lookAt();
-        map = new HexMap(this, 100);
-        this.box = new Box(new Point(0f, 0f, 0f), 1f, 1f, 1f);
+
     }
 
     public static HexProgram getProgram() {
@@ -113,7 +113,7 @@ public class HexProgram extends Program {
 
         this.use();
 
-        GLES20.glViewport(0, 0, width, height);
+
 
         mView[0] = 0;
         mView[1] = 0;

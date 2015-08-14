@@ -43,21 +43,20 @@ public class SimpleProgram extends Program {
     public SimpleProgram() {
         super(vertex, fragment, new String[]{}, new String[]{"a_position"});
         this.use();
-        //this.buffer = Utils.createBuffer();
+        this.buffer = Utils.createBuffer();
         mVertices.position(0);
-        //GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffer);
-        //GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertices.length, mVertices, GLES20.GL_STATIC_DRAW);
-
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffer);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertices.capacity()*MainRenderer.mBytesPerFloat, mVertices, GLES20.GL_STATIC_DRAW);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
     }
 
     public void draw(long time) {
-        mVertices.position(0);
-        //GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffer);
-
+        //mVertices.position(0);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffer);
         GLES20.glEnableVertexAttribArray(getAttrib("a_position"));
-        GLES20.glVertexAttribPointer(getAttrib("a_position"), 2, GLES20.GL_FLOAT, false, 2*4, mVertices);
+        GLES20.glVertexAttribPointer(getAttrib("a_position"), 2, GLES20.GL_FLOAT, false, 0, 0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
-        GLES20.glDisableVertexAttribArray(getAttrib("a_position"));
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
     }
 
     public static SimpleProgram getProgram() {

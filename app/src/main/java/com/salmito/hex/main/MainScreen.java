@@ -5,9 +5,8 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.os.Bundle;
-import android.view.ViewGroup;
+import android.view.View;
 import android.view.Window;
-import android.widget.TextView;
 
 public class MainScreen extends Activity {
 
@@ -36,18 +35,27 @@ public class MainScreen extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        mGLSurfaceView.onResume();
+       // mGLSurfaceView.onResume();
     }
 
     @Override
     protected void onPause() {
+        mGLSurfaceView.setVisibility(View.GONE);
         super.onPause();
-        mGLSurfaceView.onPause();
+       // mGLSurfaceView.onPause();
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus && mGLSurfaceView.getVisibility() == View.GONE) {
+            mGLSurfaceView.setVisibility(View.VISIBLE);
+        }
     }
 
 }

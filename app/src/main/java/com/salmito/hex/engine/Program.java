@@ -16,6 +16,9 @@ public abstract class Program implements Thing {
     protected int width;
     protected int height;
 
+    public Program(String s, String f) {
+        this(s, f, new String[]{}, new String[]{});
+    }
 
     public Program(String vertex, String fragment, String[] uniforms, String[] attribs) {
         this.uniforms = new HashMap<String, Integer>();

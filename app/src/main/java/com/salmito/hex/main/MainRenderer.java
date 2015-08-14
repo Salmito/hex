@@ -5,6 +5,7 @@ import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 
 import com.salmito.hex.engine.Program;
+import com.salmito.hex.programs.HudProgram;
 import com.salmito.hex.programs.hex.HexProgram;
 import com.salmito.hex.programs.simple.SimpleProgram;
 
@@ -24,7 +25,6 @@ public class MainRenderer implements GLSurfaceView.Renderer {
     public static ArrayList<Program> getPrograms() {
         if (programs == null) {
             programs = new ArrayList<Program>();
-
         }
         return programs;
     }
@@ -53,6 +53,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        GLES20.glViewport(0, 0, width, height);
         for (Program p : getPrograms()) {
             p.surfaceChanged(width, height);
         }
@@ -63,7 +64,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         lastTime = SystemClock.uptimeMillis();
 
-        getPrograms().add(SimpleProgram.getProgram());
+        getPrograms().add(HudProgram.getProgram());
         getPrograms().add(HexProgram.getProgram());
     }
 
