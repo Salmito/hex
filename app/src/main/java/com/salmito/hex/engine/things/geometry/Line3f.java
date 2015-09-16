@@ -1,4 +1,4 @@
-package com.salmito.hex.engine.things;
+package com.salmito.hex.engine.things.geometry;
 
 import com.salmito.hex.engine.Thing;
 
@@ -32,6 +32,8 @@ public class Line3f implements Thing {
         float z=p1.getZ()+(p2.getZ()-p1.getZ())*t;
         return new Point3f(x,y,z);
     }
+
+
 
     @Override
     public void draw(long time) {

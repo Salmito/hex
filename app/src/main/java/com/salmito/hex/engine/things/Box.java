@@ -4,8 +4,9 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.salmito.hex.engine.Thing;
-import com.salmito.hex.main.MainRenderer;
+import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
+import com.salmito.hex.util.Constants;
 import com.salmito.hex.util.GLHelper;
 
 import java.nio.ByteBuffer;
@@ -54,7 +55,7 @@ public class Box implements Thing {
             0, 0, 1, 1,
     };
 
-    private static final FloatBuffer mColors = ByteBuffer.allocateDirect(colors.length * MainRenderer.mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(colors);
+    private static final FloatBuffer mColors = ByteBuffer.allocateDirect(colors.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(colors);
 
     static float[] normals = {
             1, 0, 0,
@@ -92,7 +93,7 @@ public class Box implements Thing {
             0, 0, -1,
             0, 0, -1,
     };
-    private static final FloatBuffer mNormals = ByteBuffer.allocateDirect(normals.length * MainRenderer.mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(normals);
+    private static final FloatBuffer mNormals = ByteBuffer.allocateDirect(normals.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(normals);
 
     static short[] indices = {
             // Right plane
@@ -119,7 +120,7 @@ public class Box implements Thing {
             20, 21, 22,
             20, 22, 23,
     };
-    private static final ShortBuffer mIndices = ByteBuffer.allocateDirect(indices.length * MainRenderer.mBytesPerShort).order(ByteOrder.nativeOrder()).asShortBuffer().put(indices);
+    private static final ShortBuffer mIndices = ByteBuffer.allocateDirect(indices.length * Constants.bytesPerShort).order(ByteOrder.nativeOrder()).asShortBuffer().put(indices);
 
     private float dx;
     private float dy;
@@ -149,13 +150,13 @@ public class Box implements Thing {
         mNormals.position(0);
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndices.capacity() * MainRenderer.mBytesPerShort, mIndices, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndices.capacity() * Constants.bytesPerShort, mIndices, GLES20.GL_STATIC_DRAW);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalsBuffer);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mNormals.capacity() * MainRenderer.mBytesPerFloat, mNormals, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mNormals.capacity() * Constants.bytesPerFloat, mNormals, GLES20.GL_STATIC_DRAW);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBuffer);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mColors.capacity() * MainRenderer.mBytesPerFloat, mColors, GLES20.GL_DYNAMIC_DRAW);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mColors.capacity() * Constants.bytesPerFloat, mColors, GLES20.GL_DYNAMIC_DRAW);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -218,16 +219,16 @@ public class Box implements Thing {
                 -dx, dy, -dz,
                 dx, dy, -dz,
         };
-        this.mVertices = ByteBuffer.allocateDirect(vertices.length * MainRenderer.mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
+        this.mVertices = ByteBuffer.allocateDirect(vertices.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
         mVertices.position(0);
         if (verticesBuffer == 0) {
             verticesBuffer = GLHelper.createBuffer();
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertices.capacity() * MainRenderer.mBytesPerFloat, mVertices, GLES20.GL_DYNAMIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertices.capacity() * Constants.bytesPerFloat, mVertices, GLES20.GL_DYNAMIC_DRAW);
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
         } else {
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
-            GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, mVertices.capacity() * MainRenderer.mBytesPerFloat, mVertices);
+            GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, mVertices.capacity() * Constants.bytesPerFloat, mVertices);
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
         }
     }

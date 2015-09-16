@@ -7,6 +7,7 @@ import android.os.SystemClock;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.main.MainRenderer;
 import com.salmito.hex.programs.hex.HexProgram;
+import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -15,11 +16,11 @@ import java.nio.ShortBuffer;
 
 public class Hexagon implements Thing {
     public static final short[] indices = {0, 1, 2, 3, 4, 5, 6, 1};
-    public static final ShortBuffer mHexagonIndices = ByteBuffer.allocateDirect(indices.length * MainRenderer.mBytesPerShort).order(ByteOrder.nativeOrder()).asShortBuffer().put(indices);
+    public static final ShortBuffer mHexagonIndices = ByteBuffer.allocateDirect(indices.length * Constants.bytesPerShort).order(ByteOrder.nativeOrder()).asShortBuffer().put(indices);
     public static final short[] indicesWire = {1, 2, 3, 4, 5, 6, 1};
-    public static final ShortBuffer mHexagonIndicesWire = ByteBuffer.allocateDirect(indicesWire.length * MainRenderer.mBytesPerShort).order(ByteOrder.nativeOrder()).asShortBuffer().put(indicesWire);
+    public static final ShortBuffer mHexagonIndicesWire = ByteBuffer.allocateDirect(indicesWire.length * Constants.bytesPerShort).order(ByteOrder.nativeOrder()).asShortBuffer().put(indicesWire);
     public static final int mPositionDataSize = 3;
-    public static final int mStrideBytes = mPositionDataSize * MainRenderer.mBytesPerFloat;
+    public static final int mStrideBytes = mPositionDataSize * Constants.bytesPerFloat;
     public static float radius = 1.0f;
     public static final float xOff = radius * (float) (Math.cos(Math.PI / 6));
     public static final float yOff = radius * (float) (Math.sin(Math.PI / 6));
@@ -32,7 +33,7 @@ public class Hexagon implements Thing {
             (float) (radius * Math.cos(2 * Math.PI * (4 + 0.5f) / 6)), (float) (radius * Math.sin(2 * Math.PI * (4 + 0.5f) / 6)), 0.0f,    // right bottom
             (float) (radius * Math.cos(2 * Math.PI * (5 + 0.5f) / 6)), (float) (radius * Math.sin(2 * Math.PI * (5 + 0.5f) / 6)), 0.0f,    // right top
     };
-    public static final FloatBuffer mHexagonVertices = ByteBuffer.allocateDirect(vertices.length * MainRenderer.mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
+    public static final FloatBuffer mHexagonVertices = ByteBuffer.allocateDirect(vertices.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
     public static float xF = 0.0f;
     public static float yF = 0.0f;
     private static HexBuffers buffers;
@@ -185,16 +186,16 @@ public class Hexagon implements Thing {
             HexColor.mHexagonColors.position(0);
 
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertices);
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mHexagonVertices.capacity() * MainRenderer.mBytesPerFloat, mHexagonVertices, GLES20.GL_STATIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mHexagonVertices.capacity() * Constants.bytesPerFloat, mHexagonVertices, GLES20.GL_STATIC_DRAW);
 
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, color);
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, HexColor.mHexagonColors.capacity() * MainRenderer.mBytesPerFloat, HexColor.mHexagonColors, GLES20.GL_STATIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, HexColor.mHexagonColors.capacity() * Constants.bytesPerFloat, HexColor.mHexagonColors, GLES20.GL_STATIC_DRAW);
 
             GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, index);
-            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mHexagonIndices.capacity() * MainRenderer.mBytesPerShort, mHexagonIndices, GLES20.GL_STATIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mHexagonIndices.capacity() * Constants.bytesPerShort, mHexagonIndices, GLES20.GL_STATIC_DRAW);
 
             GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexwire);
-            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mHexagonIndicesWire.capacity() * MainRenderer.mBytesPerShort, mHexagonIndicesWire, GLES20.GL_STATIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mHexagonIndicesWire.capacity() * Constants.bytesPerShort, mHexagonIndicesWire, GLES20.GL_STATIC_DRAW);
 
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
             GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);

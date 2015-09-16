@@ -17,8 +17,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class MainRenderer implements GLSurfaceView.Renderer {
 
-    public static final int mBytesPerFloat = 4;
-    public static final int mBytesPerShort = 2;
+
 
     private static ArrayList<Program> programs;
     private static MainView view;

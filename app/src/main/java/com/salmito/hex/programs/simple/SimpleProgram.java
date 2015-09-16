@@ -4,6 +4,7 @@ package com.salmito.hex.programs.simple;
 import android.opengl.GLES20;
 
 import com.salmito.hex.engine.Program;
+import com.salmito.hex.util.Constants;
 import com.salmito.hex.util.GLHelper;
 import com.salmito.hex.main.MainRenderer;
 
@@ -38,7 +39,7 @@ public class SimpleProgram extends Program {
             1.0f, -1.0f,
             1.0f, 1.0f};
 
-    private static final FloatBuffer mVertices = ByteBuffer.allocateDirect(vertices.length * MainRenderer.mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
+    private static final FloatBuffer mVertices = ByteBuffer.allocateDirect(vertices.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
     private static SimpleProgram currentProgram;
 
 
@@ -50,7 +51,7 @@ public class SimpleProgram extends Program {
         this.buffer = GLHelper.createBuffer();
         mVertices.position(0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffer);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertices.capacity()*MainRenderer.mBytesPerFloat, mVertices, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertices.capacity()*Constants.bytesPerFloat, mVertices, GLES20.GL_STATIC_DRAW);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
     }
 

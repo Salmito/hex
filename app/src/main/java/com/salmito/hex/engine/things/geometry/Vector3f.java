@@ -1,4 +1,4 @@
-package com.salmito.hex.engine.things;
+package com.salmito.hex.engine.things.geometry;
 
 import com.salmito.hex.engine.Thing;
 

@@ -1,9 +1,11 @@
-package com.salmito.hex.engine.things;
+package com.salmito.hex.engine.things.camera;
 
 import android.opengl.GLU;
 import android.opengl.Matrix;
 
 import com.salmito.hex.engine.Thing;
+import com.salmito.hex.engine.things.geometry.Point3f;
+import com.salmito.hex.engine.things.geometry.Vector3f;
 
 public class Camera implements Thing {
     protected final Point3f eye;
@@ -77,7 +79,7 @@ public class Camera implements Thing {
     public void move(float x, float y) {
         eye.setX(eye.getX() - x);
         eye.setY(eye.getY() + y);
-        look.setX(look.getX()-x);
+        look.setX(look.getX() - x);
         look.setY(look.getY() + y);
     }
 
@@ -89,5 +91,13 @@ public class Camera implements Thing {
     @Override
     public void clean() {
 
+    }
+
+    public Point3f getLook() {
+        return look;
+    }
+
+    public Point3f getEye() {
+        return eye;
     }
 }

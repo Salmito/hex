@@ -7,8 +7,9 @@ import android.view.MotionEvent;
 import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.Box;
-import com.salmito.hex.engine.things.FancyCamera;
-import com.salmito.hex.engine.things.Point3f;
+import com.salmito.hex.engine.things.camera.FancyCamera;
+import com.salmito.hex.engine.things.geometry.Point3f;
+import com.salmito.hex.math.easing.EasingFunction;
 import com.salmito.hex.programs.hex.entities.HexColor;
 import com.salmito.hex.programs.hex.entities.HexMap;
 import com.salmito.hex.programs.hex.entities.Hexagon;
@@ -21,8 +22,6 @@ import java.util.TimerTask;
  * Created by tiago on 8/13/2015.
  */
 public class HexProgram extends Program {
-
-    private static final String TAG = HexProgram.class.getName();
 
     public final static String mainVertexShader =
             "uniform mat4 u_MVPMatrix;      \n"
@@ -38,7 +37,6 @@ public class HexProgram extends Program {
                     + "   gl_Position = u_MVPMatrix   \n"     // gl_Position is a special variable used to store the final position.
                     + "               * a_Position;   \n"     // Multiply the vertex by the matrix to get the final point in
                     + "}                              \n";    // normalized screen coordinates.
-
     public final static String mainFragmentShader =
             "precision mediump float;       \n"     // Set the default precision to medium. We don't need as high of a
                     // precision in the fragment shader.
@@ -50,25 +48,23 @@ public class HexProgram extends Program {
                     + "}                              \n";
     final static int[][] evenNeighbors = {{1, 0}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}};
     final static int[][] oddNeighbors = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {0, 1}, {1, 1}};
-
+    private static final String TAG = HexProgram.class.getName();
     static private final float[] mViewMatrix = new float[16];
     static private final float[] mModelMatrix = new float[16];
     static private final float[] mMVPMatrix = new float[16];
     static private final float[] mProjectionMatrix = new float[16];
 
     static private final int[] mView = new int[4];
-
-    final private FancyCamera camera;
-
     private final static ArrayList<Thing> things = new ArrayList<Thing>();
-    private static HexProgram currentProgram;
     private static final HexMap map = new HexMap(HexProgram.getProgram(), 100);
-    ;
     private static final Box box = new Box(new Point3f(0f, 0f, 0f), 1f, 1f, 1f);
+    private static HexProgram currentProgram;
+    ;
+    final private FancyCamera camera;
     ;
     public float previousX, previousY;
     private int i = 0;
-
+    private int curEasing = 0;
 
     public HexProgram() {
         super(mainVertexShader, mainFragmentShader, new String[]{"u_MVPMatrix"}, new String[]{"a_Position", "a_Color"});
@@ -182,6 +178,7 @@ public class HexProgram extends Program {
         HexMap.Coordinates t;
 
         Log.d(TAG, "Single tap detected in " + e.getX() + ", " + e.getY());
+        Log.d(TAG, "Eye pos: " + camera.getEye() + ", " + camera.getLook());
         coordinates = camera.unproject(x, y);
         t = HexMap.Coordinates.geo(coordinates[0], coordinates[1]);
         if (t.getR() >= 0 && t.getQ() >= 0) {
@@ -258,7 +255,7 @@ public class HexProgram extends Program {
             Point3f p1 = new Point3f(h.getXCenter(), h.getYCenter(), 0f);
             Point3f p2 = new Point3f(h.getXCenter(), h.getYCenter(), 10f);
 
-            camera.moveTo(p1, p2, 10f);
+            camera.moveTo(p2, p1, 1f, EasingFunction.easings[curEasing++ % EasingFunction.easings.length]);
         }
 
 

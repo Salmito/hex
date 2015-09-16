@@ -3,7 +3,6 @@ package com.salmito.hex.programs.hex.entities;
 import android.os.SystemClock;
 
 import com.salmito.hex.engine.Thing;
-import com.salmito.hex.engine.things.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
 
 import java.util.HashMap;

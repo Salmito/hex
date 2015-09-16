@@ -1,7 +1,11 @@
-package com.salmito.hex.engine.things;
+package com.salmito.hex.engine.things.geometry;
 
 import com.salmito.hex.engine.Thing;
+import com.salmito.hex.util.Constants;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -11,26 +15,44 @@ import java.util.Locale;
  */
 public class Point3f implements Thing {
     private static final DecimalFormat format = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US)); //NOI18N
-    private final float[] point;
-
-    public Point3f(float x, float y, float z, float w) {
-        this.point = new float[]{x, y, z, w};
-    }
+    private final FloatBuffer buffer;
+    private int offset;
 
     public Point3f(float x, float y, float z) {
-        this(x, y, z, 1f);
+        this.buffer = ByteBuffer.allocateDirect(3 * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(new float[]{x, y, z});
+        this.offset = 0;
+    }
+
+    public Point3f(FloatBuffer buf, int offset) {
+        float[] dst = new float[3];
+        buffer = buf;
+        this.offset = offset;
     }
 
     public Point3f(float[] coordinates) {
-        this(coordinates[0], coordinates[1], coordinates[2], 1f);
+        this(coordinates[0], coordinates[1], coordinates[2]);
     }
 
     public Point3f(Point3f o) {
-        this(o.getX(), o.getY(), o.getZ(), o.getW());
+        this(o.getX(), o.getY(), o.getZ());
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public FloatBuffer getBuffer() {
+        return buffer;
     }
 
     public float[] getCoords() {
-        return point;
+        float[] ret = new float[3];
+        buffer.get(ret, offset, 3);
+        return ret;
     }
 
     @Override
@@ -39,38 +61,28 @@ public class Point3f implements Thing {
     }
 
     public float getX() {
-        return point[0];
-    }
-
-    public float getW() {
-        return point[3];
+        return buffer.get(offset);
     }
 
     public void setX(float x) {
-        this.point[0] = x;
+        buffer.put(offset, x);
     }
-
-    public void setW(float w) {
-        this.point[3] = w;
-    }
-
 
     public float getY() {
-        return point[1];
+        return buffer.get(offset + 1);
     }
 
     public void setY(float y) {
-        this.point[1] = y;
+        buffer.put(offset + 1, y);
     }
 
     public float getZ() {
-        return point[2];
+        return buffer.get(offset + 2);
     }
 
     public void setZ(float z) {
-        point[2] = z;
+        buffer.put(offset + 2, z);
     }
-
 
 
     @Override
@@ -97,13 +109,12 @@ public class Point3f implements Thing {
 
     @Override
     public String toString() {
-        return String.format("Point3f[x=%s, y=%s, z=%s]", format.format(getX()), format.format(getY()), format.format(getZ()));
+        return String.format(this.getClass().getSimpleName()+"[x=%s, y=%s, z=%s]", format.format(getX()), format.format(getY()), format.format(getZ()));
     }
 
     public void set(Point3f p) {
-        point[0]=p.getX();
-        point[1]=p.getY();
-        point[2]=p.getZ();
-        point[3]=p.getW();
+        setX(p.getX());
+        setY(p.getY());
+        setZ(p.getZ());
     }
 }

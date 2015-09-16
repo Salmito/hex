@@ -1,6 +1,7 @@
 package com.salmito.hex.programs.hex.entities;
 
 import com.salmito.hex.main.MainRenderer;
+import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,7 +18,7 @@ public class HexColor {
     final public static int mColorNumber = 7;
 
     public static final int mColorDataSize = 4;
-    public static final int mColorStrideBytes = mColorDataSize * MainRenderer.mBytesPerFloat;
+    public static final int mColorStrideBytes = mColorDataSize * Constants.bytesPerFloat;
     public static final int mColorSize = 7;
     public static final int mColorByteSize = mColorDataSize * mColorSize;
 
@@ -90,7 +91,7 @@ public class HexColor {
     public static final FloatBuffer mHexagonColors = ByteBuffer.allocateDirect(colors.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(colors);
 
     public static void setColor(int color) {
-        offset=color*mColorByteSize*MainRenderer.mBytesPerFloat;
+        offset=color*mColorByteSize*Constants.bytesPerFloat;
         //mHexagonColors.position(color * mColorSize);
     }
 

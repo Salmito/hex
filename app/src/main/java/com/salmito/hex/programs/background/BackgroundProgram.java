@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 
 import com.salmito.hex.engine.Program;
 import com.salmito.hex.main.MainRenderer;
+import com.salmito.hex.util.Constants;
 import com.salmito.hex.util.GLHelper;
 
 import java.nio.ByteBuffer;
@@ -27,7 +28,7 @@ public class BackgroundProgram extends Program {
             -1.0f, 1.0f,
             1.0f, -1.0f,
             1.0f, 1.0f};
-    public static final FloatBuffer mHudVertices = ByteBuffer.allocateDirect(vertices.length * MainRenderer.mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
+    public static final FloatBuffer mHudVertices = ByteBuffer.allocateDirect(vertices.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
     private static BackgroundProgram currentProgram;
     private final long startTime;
 
@@ -61,7 +62,7 @@ public class BackgroundProgram extends Program {
         this.bufferId = GLHelper.createBuffer();
         mHudVertices.position(0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, bufferId);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mHudVertices.capacity() * MainRenderer.mBytesPerFloat, mHudVertices, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mHudVertices.capacity() * Constants.bytesPerFloat, mHudVertices, GLES20.GL_STATIC_DRAW);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
     }
 
