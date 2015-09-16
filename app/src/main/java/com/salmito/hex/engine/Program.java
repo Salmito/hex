@@ -13,8 +13,7 @@ import java.util.HashMap;
 public abstract class Program implements Thing {
     protected final HashMap<String, Integer> uniforms;
     protected final HashMap<String, Integer> attribs;
-    protected final int programHandle;
-
+    protected int programHandle;
     protected int width;
     protected int height;
 
@@ -62,6 +61,10 @@ public abstract class Program implements Thing {
         return programHandle;
     }
 
+    public void setProgramHandle(int programHandle) {
+        this.programHandle = programHandle;
+    }
+
     private int getHandle() {
         return programHandle;
     }
@@ -105,7 +108,27 @@ public abstract class Program implements Thing {
     }
 
     public void touchEvent(MotionEvent ev) {
+    }
 
+    public void onDoubleTap(MotionEvent e) {
+    }
+
+    public void onSingleTapConfirmed(MotionEvent e) {
+    }
+
+    public void onLongPress(MotionEvent ev) {
+    }
+
+    public void onSwipeRight() {
+    }
+
+    public void onSwipeLeft() {
+    }
+
+    public void onSwipeTop() {
+    }
+
+    public void onSwipeBottom() {
     }
 
 }

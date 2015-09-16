@@ -19,11 +19,15 @@ public class SimpleProgram extends Program {
     private static String vertex = "attribute vec2 a_position;\n" +
             "\n" +
             "void main() {\n" +
-            "  gl_Position = vec4(a_position, 0, 1);\n" +
+            "   gl_Position = gl_Vertex;\n" +
             "}";
 
     private static String fragment = "void main() {\n" +
-            "  gl_FragColor = vec4(0,1,0,1);  // green\n" +
+            "   vec2 pos = mod(gl_FragCoord.xy, vec2(50.0)) - vec2(25.0);\n" +
+            "   float dist_squared = dot(pos, pos);\n" +
+            "     gl_FragColor = (dist_squared < 400.0) \n" +
+            "       ? vec4(.90, .90, .90, 1.0)\n" +
+            "        : vec4(.20, .20, .40, 1.0);" +
             "}";
 
     private static float[] vertices = {

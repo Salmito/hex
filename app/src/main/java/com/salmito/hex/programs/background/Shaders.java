@@ -8,7 +8,8 @@ public class Shaders {
 
 
     public final static String hudVertexShader = "attribute vec3 position; void main() { gl_Position = vec4( position, 1.0 ); }";
-    public final static String hudFragmentShader = "" +
+
+    public final static String [] hudFragmentShaders = { "" +
             "#ifdef GL_ES\n" +
             "precision mediump float;\n" +
             "#endif\n" +
@@ -41,24 +42,34 @@ public class Shaders {
             "\tgl_FragColor = vec4( c,c,c, 1.0 ); // set the pixel colour\n" +
             "\n" +
             "\n" +
-            "}";
+            "}",
 
-    public final static String secondVertexShader = "attribute vec3 position;\n" +
-            "\t\t\tvoid main() {\n" +
-            "\t\t\t\tgl_Position = vec4( position, 1.0 );\n" +
+            //Second
+            "#ifdef GL_ES\n" +
+            "precision mediump float;\n" +
+            "#endif\n" +
             "\n" +
-            "\t\t\t}";
-
-    public final static String secondFragmentShader = "#ifdef GL_ES\n" +
-            "\t\t\tprecision highp float;\n" +
-            "\t\t\t#endif\n" +
+            "uniform float time;\n" +
+            "uniform vec2 mouse;\n" +
+            "uniform vec2 resolution;\n" +
             "\n" +
-            "\t\t\tuniform vec2 resolution;\n" +
-            "\t\t\tuniform sampler2D texture;\n" +
+            "#define PI 3.14159265359\n" +
             "\n" +
-            "\t\t\tvoid main() {\n" +
+            "vec3 texPoint(vec2 v) {\n" +
+            "\treturn vec3(mod(floor((v.x+0.02*sin(v.y+time*2.0))*1.0) + floor((v.y+time)*2.0), 2.0),\n" +
+            "\t\t    mod(floor((v.x-0.02*sin(v.y+time*2.0))*10.0) + floor((v.y+time)*71.0), 2.0),\n" +
+            "\t\t    mod(floor((v.x+0.02*cos(v.y+time*2.0))*1.0) + floor((v.y+time)*71.0), 7.0));\n" +
+            "}\n" +
             "\n" +
-            "\t\t\t\tvec2 uv = gl_FragCoord.xy / resolution.xy;\n" +
-            "\t\t\t\tgl_FragColor =  vec4( 1.0,0.0,0.0, 1.0 );//\ntexture2D( texture, uv );\n" +
-            "\t\t\t}";
+            "void main( void ) {\n" +
+            "\n" +
+            "\tvec2 position = ( gl_FragCoord.xy / resolution.xy ) - vec2(0.5, 0.5);\n" +
+            "\tposition.x *= resolution.x / resolution.y;\n" +
+            "\tfloat dist = tan(mix(PI/2.2, PI/3.0, length(position)));\n" +
+            "\tvec2 tex = vec2(mod(atan(position.x, position.y), 2.0*PI)/(1.0*PI), dist);\n" +
+            "\n" +
+            "\tvec3 color = texPoint(tex) / pow(dist, 0.1);\n" +
+            "\n" +
+            "\tgl_FragColor = vec4( color, 7.0 );\n" +
+            "}"};
 }

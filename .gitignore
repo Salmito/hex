@@ -1,4 +1,5 @@
 /app/build/
-build/
+/build/
 *~
 *.swp
+/.gradle/

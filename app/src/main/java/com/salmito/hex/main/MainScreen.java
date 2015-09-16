@@ -24,7 +24,13 @@ public class MainScreen extends Activity {
         final boolean supportsEs2 = configurationInfo.reqGlEsVersion >= 0x20000;
         if (supportsEs2) {
             mGLSurfaceView.setEGLContextClientVersion(2);
-            mGLSurfaceView.setRenderer(new MainRenderer());
+            mGLSurfaceView.setPreserveEGLContextOnPause(true);
+            mGLSurfaceView.setEGLConfigChooser(8 , 8, 8, 8, 16, 0);
+            MainRenderer renderer=new MainRenderer();
+            MainRenderer.setView(mGLSurfaceView);
+
+            mGLSurfaceView.setRenderer(renderer);
+
         } else {
             return;
         }
@@ -34,15 +40,16 @@ public class MainScreen extends Activity {
 
     @Override
     protected void onResume() {
+        mGLSurfaceView.setVisibility(View.VISIBLE);
         super.onResume();
-       // mGLSurfaceView.onResume();
+        mGLSurfaceView.onResume();
     }
 
     @Override
     protected void onPause() {
         mGLSurfaceView.setVisibility(View.GONE);
         super.onPause();
-       // mGLSurfaceView.onPause();
+        mGLSurfaceView.onPause();
     }
 
     @Override

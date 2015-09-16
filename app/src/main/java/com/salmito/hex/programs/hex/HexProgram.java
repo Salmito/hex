@@ -1,6 +1,7 @@
 package com.salmito.hex.programs.hex;
 
 import android.opengl.Matrix;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.salmito.hex.engine.Program;
@@ -19,6 +20,8 @@ import java.util.TimerTask;
  * Created by tiago on 8/13/2015.
  */
 public class HexProgram extends Program {
+
+    private static final String TAG = HexProgram.class.getName();
 
     public final static String mainVertexShader =
             "uniform mat4 u_MVPMatrix;      \n"
@@ -146,6 +149,38 @@ public class HexProgram extends Program {
     }
 
     @Override
+    public void onDoubleTap(MotionEvent e) {
+        float x = e.getX();
+        float y = e.getY();
+        float[] coordinates;
+        HexMap.Coordinates t;
+
+        coordinates = getCamera().unproject(x, y);
+        t = HexMap.Coordinates.geo(coordinates[0], coordinates[1]);
+        Log.d(TAG, "Double tap detected in " + (t.getQ()) + " " + (t.getR()) + " " + getMap().hasHexagon(t));
+
+        touch(t);
+    }
+
+    @Override
+    public void onSingleTapConfirmed(MotionEvent e) {
+        float x = e.getX();
+        float y = e.getY();
+        float[] coordinates;
+        HexMap.Coordinates t;
+
+        Log.d(TAG,"Single tap detected in "+e.getX()+", "+e.getY());
+        coordinates = getCamera().unproject(x, y);
+        t = HexMap.Coordinates.geo(coordinates[0], coordinates[1]);
+        if (t.getR() >= 0 && t.getQ() >= 0) {
+            Hexagon h = getMap().getHexagon(t);
+            h.flip((h.getColor() + 1) % HexColor.mColorNumber, 0);
+        }
+
+
+    }
+
+    @Override
     public void touchEvent(MotionEvent e) {
         float x = e.getX();
         float y = e.getY();
@@ -154,15 +189,9 @@ public class HexProgram extends Program {
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
-                coordinates = getCamera().unproject(x, y);
-                t = HexMap.Coordinates.geo(coordinates[0], coordinates[1]);
-                if (t.getR() >= 0 && t.getQ() >= 0) {
-                    Hexagon h = getMap().getHexagon(t);
-                    h.flip((h.getColor() + 1) % HexColor.mColorNumber, 0);
-                }
                 break;
             case MotionEvent.ACTION_MOVE:
-
+                //System.out.println("ACTION MOVE");
                 float dx = x - previousX;
                 float dy = y - previousY;
                 if (e.getPointerCount() == 1) {
@@ -175,16 +204,19 @@ public class HexProgram extends Program {
                 } else {
                     if (e.getPointerCount() == 2) {
                         getCamera().zoom(dy / 100.0f);
-                        System.out.println("Screen limits: "+getScreenBottom()+" -> "+getScreenTop());
+                        System.out.println("Screen limits: " + getScreenBottom() + " -> " + getScreenTop());
                     }
                 }
                 break;
             case MotionEvent.ACTION_DOWN:
                 coordinates = getCamera().unproject(x, y);
                 t = HexMap.Coordinates.geo(coordinates[0], coordinates[1]);
-                System.out.println("tap on: " + (t.getQ()) + " " + (t.getR()) + " " + getMap().hasHexagon(t));
+                System.out.println("ACTION DOWN on: " + (t.getQ()) + " " + (t.getR()) + " " + getMap().hasHexagon(t));
 
-                touch(t);
+              //  coordinates = getCamera().unproject(x, y);
+              //  t = HexMap.Coordinates.geo(coordinates[0], coordinates[1]);
+              //  touch(t);
+
                 box.move(new Point3f(coordinates));
                 break;
         }
@@ -231,4 +263,6 @@ public class HexProgram extends Program {
     public HexCamera getCamera() {
         return camera;
     }
+
+
 }
