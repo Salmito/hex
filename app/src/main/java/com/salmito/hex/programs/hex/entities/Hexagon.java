@@ -92,6 +92,17 @@ public class Hexagon implements Thing {
         this.color = color;
     }
 
+    public float getXCenter() {
+        float xf = xOff * coordinates.getQ() * 2;
+        if ((coordinates.getR() & 1) != 0)    // if the current line is not even
+            return xf + xOff;     // extra offset of half the width on xPos axis
+        return xf;
+    }
+
+    public float getYCenter() {
+       return yOff * coordinates.getR() * 3;
+    }
+
     @Override
     public void draw(long dt) {
         HexBuffers buffers = getBuffers();

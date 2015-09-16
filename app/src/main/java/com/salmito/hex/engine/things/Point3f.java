@@ -11,16 +11,26 @@ import java.util.Locale;
  */
 public class Point3f implements Thing {
     private static final DecimalFormat format = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US)); //NOI18N
-    private float x, y, z;
+    private final float[] point;
+
+    public Point3f(float x, float y, float z, float w) {
+        this.point = new float[]{x, y, z, w};
+    }
 
     public Point3f(float x, float y, float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this(x, y, z, 1f);
     }
 
     public Point3f(float[] coordinates) {
-        this(coordinates[0], coordinates[1], coordinates[2]);
+        this(coordinates[0], coordinates[1], coordinates[2], 1f);
+    }
+
+    public Point3f(Point3f o) {
+        this(o.getX(), o.getY(), o.getZ(), o.getW());
+    }
+
+    public float[] getCoords() {
+        return point;
     }
 
     @Override
@@ -29,28 +39,39 @@ public class Point3f implements Thing {
     }
 
     public float getX() {
-        return x;
+        return point[0];
+    }
+
+    public float getW() {
+        return point[3];
     }
 
     public void setX(float x) {
-        this.x = x;
+        this.point[0] = x;
     }
 
+    public void setW(float w) {
+        this.point[3] = w;
+    }
+
+
     public float getY() {
-        return y;
+        return point[1];
     }
 
     public void setY(float y) {
-        this.y = y;
+        this.point[1] = y;
     }
 
     public float getZ() {
-        return z;
+        return point[2];
     }
 
     public void setZ(float z) {
-        this.z = z;
+        point[2] = z;
     }
+
+
 
     @Override
     public void clean() {
@@ -64,9 +85,9 @@ public class Point3f implements Thing {
      * @return the square of distance between these two points as a float
      */
     public final float distanceSquared(Point3f p1) {
-        double dx = x - p1.x;
-        double dy = y - p1.y;
-        double dz = z - p1.z;
+        double dx = getX() - p1.getX();
+        double dy = getY() - p1.getY();
+        double dz = getZ() - p1.getZ();
         return (float) (dx * dx + dy * dy + dz * dz);
     }
 
@@ -76,6 +97,13 @@ public class Point3f implements Thing {
 
     @Override
     public String toString() {
-        return String.format("Point3f[x=%s, y=%s, z=%s]", format.format(x), format.format(y), format.format(z));
+        return String.format("Point3f[x=%s, y=%s, z=%s]", format.format(getX()), format.format(getY()), format.format(getZ()));
+    }
+
+    public void set(Point3f p) {
+        point[0]=p.getX();
+        point[1]=p.getY();
+        point[2]=p.getZ();
+        point[3]=p.getW();
     }
 }
