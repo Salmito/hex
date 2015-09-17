@@ -5,7 +5,7 @@ package com.salmito.hex.math.easing;
  */
 public class InOutElastic implements EasingFunction {
     @Override
-    public float f(float n) {
+    public float easy(float n) {
         if (n == 0) return 0;
         if ((n *= 2) == 2) return 1;
         float p = 0.45f;	// 0.3 * 1.5

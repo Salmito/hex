@@ -5,7 +5,7 @@ package com.salmito.hex.math.easing;
  */
 public class InOutQuint implements EasingFunction {
     @Override
-    public float f(float t) {
+    public float easy(float t) {
         return t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;
     }
 }

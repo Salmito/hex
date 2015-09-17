@@ -7,7 +7,7 @@ import android.util.FloatMath;
  */
 public class OutElastic implements EasingFunction {
     @Override
-    public float f(float n) {
+    public float easy(float n) {
         if (n == 0) return 0;
         if (n == 1) return 1;
         float p = 0.3f;

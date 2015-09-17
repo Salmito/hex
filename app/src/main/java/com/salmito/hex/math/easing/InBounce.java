@@ -6,7 +6,7 @@ package com.salmito.hex.math.easing;
 public class InBounce implements EasingFunction {
     private OutBounce ob=new OutBounce();
     @Override
-    public float f(float t) {
-        return 1 - ob.f(1 - t);
+    public float easy(float t) {
+        return 1 - ob.easy(1 - t);
     }
 }

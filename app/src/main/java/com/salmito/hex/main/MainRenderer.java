@@ -6,8 +6,6 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.salmito.hex.engine.Program;
-import com.salmito.hex.programs.background.BackgroundProgram;
-import com.salmito.hex.programs.hex.BufferProgram;
 import com.salmito.hex.programs.hex.HexProgram;
 
 import java.util.ArrayList;
@@ -16,7 +14,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MainRenderer implements GLSurfaceView.Renderer {
-
 
 
     private static ArrayList<Program> programs;
@@ -71,16 +68,13 @@ public class MainRenderer implements GLSurfaceView.Renderer {
     }
 
 
-
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         lastTime = SystemClock.uptimeMillis();
 
-        getPrograms().add(new BufferProgram(BackgroundProgram.getProgram()));
-        getPrograms().add(HexProgram.getProgram());
         //getPrograms().add(new BufferProgram(BackgroundProgram.getProgram()));
-        //   getPrograms().add(SimpleProgram.getProgram());
+        getPrograms().add(HexProgram.getProgram());
     }
 
 }

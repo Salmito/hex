@@ -48,7 +48,7 @@ public class Camera implements Thing {
      * @param y Y resolution in pixels
      * @return the xyz position in world coordinates
      */
-    public float[] unproject(int x, int y) {
+    public Point3f unproject(int x, int y) {
         float[] objCoordsnear = new float[4];
         float[] objCoordsfar = new float[4];
         GLU.gluUnProject(x, mView[3] - y, 0.0f, mViewMatrix, 0, mProjectionMatrix, 0, mView, 0, objCoordsnear, 0);
@@ -68,12 +68,11 @@ public class Camera implements Thing {
 
         //Intersection of near-far line with plane z=0
         float[] ret = new float[4];
-        ret[0] = objCoordsnear[0] + u * (objCoordsfar[0] - objCoordsnear[0]);
-        ret[1] = objCoordsnear[1] + u * (objCoordsfar[1] - objCoordsnear[1]);
-        ret[2] = 0.0f;
-        ret[3] = 1.0f;
-
-        return ret;
+        return new Point3f(
+                objCoordsnear[0] + u * (objCoordsfar[0] - objCoordsnear[0]),
+                objCoordsnear[1] + u * (objCoordsfar[1] - objCoordsnear[1]),
+                0.0f
+        );
     }
 
     public void move(float x, float y) {

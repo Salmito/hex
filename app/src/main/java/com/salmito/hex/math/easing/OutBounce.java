@@ -5,7 +5,7 @@ package com.salmito.hex.math.easing;
  */
 public class OutBounce implements EasingFunction {
     @Override
-    public float f(float t) {
+    public float easy(float t) {
         if (t == 0) return 0f;
         if (t == 1) return 1f;
         if (t < (1f / 2.75f)) {

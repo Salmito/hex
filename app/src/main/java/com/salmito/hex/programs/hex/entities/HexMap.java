@@ -3,20 +3,20 @@ package com.salmito.hex.programs.hex.entities;
 import android.os.SystemClock;
 
 import com.salmito.hex.engine.Thing;
+import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HexMap implements Thing {
 
     private final int size;
     private final HexProgram program;
-    private Map<Coordinates, Hexagon> map;
+    private ConcurrentHashMap<HexCoord, Hexagon> map;
 
     public HexMap(HexProgram program, int size) {
         this.size = size;
-        map = new HashMap<Coordinates, Hexagon>();
+        map = new ConcurrentHashMap<HexCoord, Hexagon>();
         this.program = program;
     }
 
@@ -25,10 +25,10 @@ public class HexMap implements Thing {
     }
 
     public boolean hasHexagon(int x, int y) {
-        return hasHexagon(new Coordinates(x, y));
+        return hasHexagon(new HexCoord(x, y));
     }
 
-    public boolean hasHexagon(Coordinates p) {
+    public boolean hasHexagon(HexCoord p) {
         return map.containsKey(p);
     }
 
@@ -38,7 +38,7 @@ public class HexMap implements Thing {
     }
 
     public Hexagon getHexagon(int i, int j) {
-        final Coordinates p = new Coordinates(i, j);
+        final HexCoord p = new HexCoord(i, j);
         Hexagon hex = map.get(p);
         if (hex == null) {
             hex = new Hexagon(program, p.getQ(), p.getR());
@@ -47,7 +47,11 @@ public class HexMap implements Thing {
         return hex;
     }
 
-    public Hexagon getHexagon(Coordinates p) {
+    public void drawLine(HexCoord c1,HexCoord c2) {
+
+    }
+
+    public Hexagon getHexagon(HexCoord p) {
         Hexagon hex = map.get(p);
         if (hex == null) {
             hex = new Hexagon(program, p.getQ(), p.getR());
@@ -58,11 +62,13 @@ public class HexMap implements Thing {
 
     @Override
     public void draw(long time) {
-        program.getScreenTop();
-        program.getScreenBottom();
-        for (int i = 0; i < size; i++)
-            for (int j = 0; j < size; j++)
-                if (hasHexagon(i, j)) getHexagon(i, j).draw(time);
+        Point3f screenTop = program.getScreenTop();
+        Point3f screenBottom = program.getScreenBottom();
+
+
+        for(Hexagon x:map.values()) {
+            x.draw(time);
+        }
     }
 
     @Override
@@ -70,99 +76,4 @@ public class HexMap implements Thing {
         map.clear();
     }
 
-    public static class Coordinates {
-        private static float sq = (float) Math.sqrt(3.0);
-        private static float H = Hexagon.radius * (float) Math.sin(Math.PI / 6);
-        private static float height = Hexagon.radius + 2.0f * H;
-        private static float R = Hexagon.radius * (float) Math.cos(Math.PI / 6);
-        private static float M = H / R;
-        private static float width = 2.0f * R;
-        private final int hash;
-        private int q;
-        private int r;
-
-        public Coordinates(int q, int r) {
-            this.q = q;
-            this.r = r;
-
-            int sum = q + r;
-            hash = sum * (sum + 1) / 2 + r;
-        }
-
-        public Coordinates(int x, int y, int z) {
-            this.q = x;
-            this.r = z;
-            int sum = q + r;
-            hash = sum * (sum + 1) / 2 + r;
-        }
-
-        public static Coordinates get(int x, int y, int z) {//throws Exception {
-            //if(x+y+z!=0) throw(new Exception("Invalid cube coordinates"));
-            return new Coordinates(x + (z - (z & 1)) / 2, z);
-        }
-
-        public static Coordinates geo(float x, float y) {
-            x += R;
-            //else x-=R;
-            y += Hexagon.radius;
-            //else y-=Hexagon.radius;
-
-            int Xs = (int) (x / width); //hex coord
-            int Ys = (int) (y / (H + Hexagon.radius));
-
-            float Xi = Math.abs(x - ((float) Xs) * width); //position inside hex
-            float Yi = y - Math.abs(((float) Ys) * (H + Hexagon.radius));
-
-            if (Ys % 2 == 1) { //even line B
-                if (Xi >= R) {
-                    if (Yi < (2 * H - Xi * M)) Ys--;
-                } else {
-                    if (Yi < (Xi * M)) Ys--;
-                    else Xs--;
-                }
-            } else { //odd line A
-                if (Yi < H - Xi * M) {
-                    Ys--;
-                    Xs--;
-                } else if (Yi < (-H + Xi * M)) Ys--;
-            }
-            //if(Ys<0) Ys=0;
-            //if(Xs<0) Xs=0;
-            return new Coordinates(Xs, Ys);
-        }
-
-        public int getQ() {
-            return q;
-        }
-
-        public int getR() {
-            return r;
-        }
-
-        public int getX() {
-            return q - (r - (r & 1)) / 2;
-        }
-
-        public int getY() {
-            return -this.getX() - this.getZ();
-        }
-
-        public int getZ() {
-            return r;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            Coordinates t = (Coordinates) o;
-            return this.q == t.q && this.r == t.r;
-        }
-
-
-        //private static float H=Hexagon.radius/2.0f;
-
-        @Override
-        public int hashCode() {
-            return hash;
-        }
-    }
 }

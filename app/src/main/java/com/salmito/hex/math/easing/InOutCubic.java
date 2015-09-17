@@ -5,7 +5,7 @@ package com.salmito.hex.math.easing;
  */
 public class InOutCubic implements EasingFunction {
     @Override
-    public float f(float t) {
+    public float easy(float t) {
         return t < .5f ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
     }
 }

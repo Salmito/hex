@@ -5,7 +5,7 @@ package com.salmito.hex.math.easing;
  */
 public class InQuad implements EasingFunction {
     @Override
-    public float f(float t) {
+    public float easy(float t) {
         return t * t;
     }
 }

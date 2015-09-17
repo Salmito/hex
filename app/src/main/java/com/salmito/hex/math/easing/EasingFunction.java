@@ -4,7 +4,7 @@ package com.salmito.hex.math.easing;
  * Created by tiago on 9/16/2015.
  */
 public interface EasingFunction {
-    public float f(float t);
+    public float easy(float t);
 
     public final static EasingFunction[] easings = {
             new Linear(),

@@ -5,7 +5,7 @@ import android.opengl.Matrix;
 import android.os.SystemClock;
 
 import com.salmito.hex.engine.Thing;
-import com.salmito.hex.main.MainRenderer;
+import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
 import com.salmito.hex.util.Constants;
 
@@ -37,6 +37,7 @@ public class Hexagon implements Thing {
     public static float xF = 0.0f;
     public static float yF = 0.0f;
     private static HexBuffers buffers;
+    private final Point3f center;
     private int color = HexColor.WHITE;
     private float rotateAngle = 90.0f;
     private boolean rotate = false;
@@ -45,16 +46,34 @@ public class Hexagon implements Thing {
     private long lastFlip = 0L;
     private float upX = 1f, upY = 0f, upZ = 0f;
     private int i = 0;
-    private HexMap.Coordinates coordinates;
+    private HexCoord coordinates;
     private HexProgram program;
+
+    public HexCoord getCoordinates() {
+        return coordinates;
+    }
+
+    private static HexCoord[] directions = {
+            new HexCoord(0, 1, 0)
+    };
 
     public Hexagon(HexProgram program, int r, int q) {
         this.program = program;
-        this.coordinates = new HexMap.Coordinates(r, q);
+        this.coordinates = new HexCoord(r, q);
+
+        float xf = xOff * coordinates.getQ() * 2;
+        if ((coordinates.getR() & 1) != 0)
+            xf += xOff;
+
+        this.center = new Point3f(xf, yOff * coordinates.getR() * 3, 0f);
     }
 
-    public Hexagon(int color) {
-        this.setColor(color);
+    public Point3f getCenter() {
+        return center;
+    }
+
+    public Hexagon getNeighbor(int dir) {
+        return program.getMap().getHexagon(coordinates.getDirection(dir));
     }
 
     private static HexBuffers getBuffers() {
@@ -93,17 +112,6 @@ public class Hexagon implements Thing {
         this.color = color;
     }
 
-    public float getXCenter() {
-        float xf = xOff * coordinates.getQ() * 2;
-        if ((coordinates.getR() & 1) != 0)    // if the current line is not even
-            return xf + xOff;     // extra offset of half the width on xPos axis
-        return xf;
-    }
-
-    public float getYCenter() {
-       return yOff * coordinates.getR() * 3;
-    }
-
     @Override
     public void draw(long dt) {
         HexBuffers buffers = getBuffers();
@@ -112,16 +120,9 @@ public class Hexagon implements Thing {
         GLES20.glVertexAttribPointer(program.getAttrib("a_Position"), mPositionDataSize, GLES20.GL_FLOAT, false, 0, 0);
         GLES20.glEnableVertexAttribArray(program.getAttrib("a_Position"));
 
-        float xf = xOff * coordinates.getQ() * 2;
-        final float yf = yOff * coordinates.getR() * 3;
-        if ((coordinates.getR() & 1) != 0)    // if the current line is not even
-            xf += xOff;     // extra offset of half the width on xPos axis
-
-        //if(xPos<=2 && yPos<=2) System.out.println("Hexagon ("+xPos+","+yPos+") "+"Center xPos="+xf+" yPos="+yf);
-
 
         Matrix.setIdentityM(program.getmModelMatrix(), 0);
-        Matrix.translateM(program.getmModelMatrix(), 0, xf, yf, 0.0f);
+        Matrix.translateM(program.getmModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
 
         if (rotate) {
             long time = SystemClock.uptimeMillis() - lastFlip;

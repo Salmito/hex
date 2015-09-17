@@ -1,6 +1,5 @@
 package com.salmito.hex.engine.things.camera;
 
-import android.graphics.PointF;
 import android.util.Log;
 
 import com.salmito.hex.engine.things.geometry.Line3f;
@@ -23,10 +22,10 @@ public class FancyCamera extends Camera {
     private EasingFunction cF;
     private static Linear defaultEasing=new Linear();
 
-    public void moveTo(Point3f d_eye, Point3f d_look, float time, EasingFunction f) {
-        Log.d("FancyCamera", "Going to "+d_eye+" looking "+d_look+" in "+time+"s with "+f.getClass().getSimpleName());
-        remaining_time= (long) (time*1000f);
-        total_time= (long) (time*1000f);
+    public void moveTo(Point3f d_eye, Point3f d_look, float dt, EasingFunction f) {
+        Log.d("FancyCamera", "Going to "+d_eye+" looking "+d_look+" in "+dt+"s with "+f.getClass().getSimpleName());
+        remaining_time= (long) (dt*1000f);
+        total_time= (long) (dt*1000f);
         this.d_eye=d_eye;
         this.d_look=d_look;
         this.s_eye=new Point3f(eye);
@@ -48,9 +47,9 @@ public class FancyCamera extends Camera {
 
         remaining_time -= dt;
         float t=1f-(((float)remaining_time)/total_time);
-        if(t<0f) t=0f;
-        else if(t>1f) t=1f;
-        t=cF.f(t);
+
+        t=cF.easy(t);
+
         Point3f cEye= Line3f.interpolate(s_eye, d_eye, t);
         Point3f cLook=Line3f.interpolate(s_look,d_look,t);
         this.look.set(cLook);
