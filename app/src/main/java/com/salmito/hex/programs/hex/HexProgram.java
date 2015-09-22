@@ -1,5 +1,6 @@
 package com.salmito.hex.programs.hex;
 
+import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -8,6 +9,7 @@ import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.Box;
 import com.salmito.hex.engine.things.camera.FancyCamera;
+import com.salmito.hex.engine.things.geometry.Line3f;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.math.easing.EasingFunction;
 import com.salmito.hex.programs.hex.entities.HexColor;
@@ -60,13 +62,15 @@ public class HexProgram extends Program {
     private static final HexMap map = new HexMap(HexProgram.getProgram(), 100);
     private static final Box box = new Box(new Point3f(0f, 0f, 0f), 1f, 1f, 1f);
     private static HexProgram currentProgram;
-    ;
+
     final private FancyCamera camera;
-    ;
+    private final Line3f line;
+
     public float previousX, previousY;
     private int i = 0;
     private int curEasing = 0;
     private float cameraHeight;
+    private boolean drawLine;
 
     public HexProgram() {
         super(mainVertexShader, mainFragmentShader, new String[]{"u_MVPMatrix"}, new String[]{"a_Position", "a_Color"});
@@ -74,6 +78,8 @@ public class HexProgram extends Program {
         this.camera = new FancyCamera(mViewMatrix, mView, mProjectionMatrix);
         things.add(0, camera);
         cameraHeight = 10f;
+        GLES20.glLineWidth(5f);
+        line = new Line3f(this, new Point3f(0f, 0f, 0f), new Point3f(10f, 0f, 0f));
     }
 
     public static HexProgram getProgram() {
@@ -147,6 +153,8 @@ public class HexProgram extends Program {
         camera.draw(time);
         map.draw(time);
         box.draw(time);
+        if (drawLine)
+            line.draw(time);
     }
 
     private Hexagon touch(final HexCoord t) {
@@ -167,7 +175,7 @@ public class HexProgram extends Program {
         coordinates = camera.unproject(x, y);
         t = HexCoord.geo(coordinates.getX(), coordinates.getY());
         Log.d(TAG, "Double tap detected in " + (t.getQ()) + " " + (t.getR()) + " " + getMap().hasHexagon(t));
-        touch(t,1);
+        touch(t, 1);
     }
 
     @Override
@@ -182,72 +190,77 @@ public class HexProgram extends Program {
         t = HexCoord.geo(c.getX(), c.getY());
 
         Hexagon h = touch(t);
+    }
 
-        Point3f center=h.getCenter();
+    @Override
+    public void onLongPress(MotionEvent e) {
+        int x = (int) e.getX();
+        int y = (int) e.getY();
+        HexCoord t;
+
+        Log.d(TAG, "Single tap detected in " + e.getX() + ", " + e.getY());
+        Log.d(TAG, "Eye pos: " + camera.getEye() + ", " + camera.getLook());
+        Point3f c = camera.unproject(x, y);
+        t = HexCoord.geo(c.getX(), c.getY());
+
+        Hexagon h = touch(t);
+
+        Point3f center = h.getCenter();
         Point3f p1 = new Point3f(center.getX(), center.getY() - 5f, cameraHeight);
         Point3f p2 = new Point3f(center.getX(), center.getY(), 0f);
 
         camera.moveTo(p1, p2, 1f, EasingFunction.easings[curEasing++ % EasingFunction.easings.length]);
 
-        if(coord1==null) {
-            coord1=t;
+        if (coord1 == null) {
+            coord1 = t;
         } else {
-            for(HexCoord l: coord1.getLine(t)) {
+            for (HexCoord l : coord1.getLine(t)) {
                 touch(l);
             }
-            coord1=null;
+            coord1 = null;
         }
 
 
-    }
+        c = camera.unproject((int) e.getX(), (int) e.getY());
+        t = HexCoord.geo(c.getX(), c.getY());
+        h = getMap().getHexagon(t);
 
-    @Override
-    public void onLongPress(MotionEvent e) {
-
-        Point3f c = camera.unproject((int) e.getX(), (int) e.getY());
-        HexCoord t = HexCoord.geo(c.getX(), c.getY());
-        Hexagon h = getMap().getHexagon(t);
-
-        Log.d(TAG, "Hexagon info: Coordinates: "+h.getCoordinates());
+        Log.d(TAG, "Hexagon info: Coordinates: " + h.getCoordinates());
         Log.d(TAG, "Hexagon info: Center: " + h.getCenter());
 
 
     }
 
     private HexCoord coord1;
+    private Point3f startLine;
+
 
     @Override
     public void touchEvent(MotionEvent e) {
-        /*float x = e.getX();
+        float x = e.getX();
         float y = e.getY();
-        float[] coordinates;
-        HexCoordinates t;
+        Point3f point = camera.unproject((int) x, (int) y);
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_UP:
+                this.drawLine = false;
                 break;
             case MotionEvent.ACTION_MOVE:
                 float dx = x - previousX;
                 float dy = y - previousY;
-                if (e.getPointerCount() == 1) {
+                if (e.getPointerCount() == 2) {
                     camera.move(dx / 100.0f, dy / 100.0f);
-                } else {
-                    if (e.getPointerCount() == 2) {
-                        camera.zoom(dy / 100.0f);
-                        System.out.println("Screen limits: " + getScreenBottom() + " -> " + getScreenTop());
-                    }
                 }
+                line.setEnd(point);
                 break;
             case MotionEvent.ACTION_DOWN:
-                coordinates = camera.unproject((int) x, (int) y);
-                t = HexCoordinates.geo(coordinates[0], coordinates[1]);
-                System.out.println("ACTION DOWN on: " + (t.getQ()) + " " + (t.getR()) + " " + getMap().hasHexagon(t));
-
-                box.move(new Point3f(coordinates));
+                this.drawLine = true;
+                line.setStart(point);
+                line.setEnd(point);
                 break;
         }
         previousX = x;
-        previousY = y;*/
+        previousY = y;
     }
 
     public Point3f getScreenBottom() {

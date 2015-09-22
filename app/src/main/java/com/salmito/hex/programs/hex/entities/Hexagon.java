@@ -120,7 +120,6 @@ public class Hexagon implements Thing {
         GLES20.glVertexAttribPointer(program.getAttrib("a_Position"), mPositionDataSize, GLES20.GL_FLOAT, false, 0, 0);
         GLES20.glEnableVertexAttribArray(program.getAttrib("a_Position"));
 
-
         Matrix.setIdentityM(program.getmModelMatrix(), 0);
         Matrix.translateM(program.getmModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
 

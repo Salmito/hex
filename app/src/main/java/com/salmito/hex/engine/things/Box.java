@@ -238,6 +238,7 @@ public class Box implements Thing {
 
 
         HexProgram program = HexProgram.getProgram();
+
         Matrix.setIdentityM(program.getmModelMatrix(), 0);
         Matrix.translateM(program.getmModelMatrix(), 0, center.getX(), center.getY(), center.getZ());
 
@@ -258,6 +259,9 @@ public class Box implements Thing {
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+        Matrix.setIdentityM(program.getmModelMatrix(), 0);
+        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmViewMatrix(), 0, program.getmModelMatrix(), 0);
+        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmProjectionMatrix(), 0, program.getmMVPMatrix(), 0);
     }
 
     @Override

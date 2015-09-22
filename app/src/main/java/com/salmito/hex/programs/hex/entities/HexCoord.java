@@ -55,11 +55,7 @@ public class HexCoord {
     }
 
     public HexCoord(int x, int y, int z) {
-        this(x, y);
-    }
-
-    public static HexCoord get(int x, int y, int z) {
-        return new HexCoord(x + (z - (z & 1)) / 2, z);
+        this(x, z);
     }
 
     public static HexCoord geo(float x, float y) {
@@ -109,11 +105,11 @@ public class HexCoord {
     }
 
     public int getY() {
-        return r;
+        return -r-q;
     }
 
     public int getZ() {
-        return -r - q;
+        return r;
     }
 
     @Override
@@ -154,15 +150,15 @@ public class HexCoord {
     }
 
     HexCoord add(HexCoord a, HexCoord b) {
-        return new HexCoord(a.q + b.q, a.r + b.r, a.getZ() + b.getZ());
+        return new HexCoord(a.getX() + b.getX(), a.getY() + b.getY(), a.getZ() + b.getZ());
     }
 
     HexCoord subtract(HexCoord a, HexCoord b) {
-        return new HexCoord(a.q - b.q, a.r - b.r, a.getZ() - b.getZ());
+        return new HexCoord(a.getX() - b.getX(), a.getY() - b.getY(), a.getZ() - b.getZ());
     }
 
     HexCoord multiply(HexCoord a, int k) {
-        return new HexCoord(a.q * k, a.r * k, a.getZ() * k);
+        return new HexCoord(a.getX() * k, a.getY() * k, a.getZ() * k);
     }
 
     public static HexFractionalCoord geo_to_hex(float x, float y, Layout layout) {
@@ -171,7 +167,7 @@ public class HexCoord {
                 (y - layout.getOrigin().getY()) / layout.getSize().getY());
         float q = M.b0 * pt.getX() + M.b1 * pt.getY();
         float r = M.b2 * pt.getX() + M.b3 * pt.getY();
-        return new HexFractionalCoord(q, r , -q -r);
+        return new HexFractionalCoord(q, -q -r, r);
     }
 
     public Point2f to_geo(Layout layout) {
