@@ -150,11 +150,11 @@ public class HexProgram extends Program {
 
     @Override
     public void draw(long time) {
-        camera.draw(time);
-        map.draw(time);
-        box.draw(time);
+        camera.draw(time, this);
+        map.draw(time, HexProgram.getProgram());
+        box.draw(time, HexProgram.getProgram());
         if (drawLine)
-            line.draw(time);
+            line.draw(time, HexProgram.getProgram());
     }
 
     private Hexagon touch(final HexCoord t) {

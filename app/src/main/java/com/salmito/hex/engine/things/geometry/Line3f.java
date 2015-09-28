@@ -64,19 +64,19 @@ public class Line3f implements Thing {
 
 
     @Override
-    public void draw(long time) {
+    public void draw(long time, Program program) {
         vertices.rewind();
 
-        Matrix.setIdentityM(program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmViewMatrix(), 0, program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmProjectionMatrix(), 0, program.getmMVPMatrix(), 0);
-        GLES20.glUniformMatrix4fv(program.getUniform("u_MVPMatrix"), 1, false, program.getmMVPMatrix(), 0);
+        Matrix.setIdentityM(this.program.getmModelMatrix(), 0);
+        Matrix.multiplyMM(this.program.getmMVPMatrix(), 0, this.program.getmViewMatrix(), 0, this.program.getmModelMatrix(), 0);
+        Matrix.multiplyMM(this.program.getmMVPMatrix(), 0, this.program.getmProjectionMatrix(), 0, this.program.getmMVPMatrix(), 0);
+        GLES20.glUniformMatrix4fv(this.program.getUniform("u_MVPMatrix"), 1, false, this.program.getmMVPMatrix(), 0);
 
-        GLES20.glVertexAttribPointer(program.getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, vertices);
-        GLES20.glEnableVertexAttribArray(program.getAttrib("a_Position"));
+        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, vertices);
+        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Position"));
         color.rewind();
-        GLES20.glVertexAttribPointer(program.getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, color);
-        GLES20.glEnableVertexAttribArray(program.getAttrib("a_Color"));
+        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, color);
+        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Color"));
         index.rewind();
         GLES20.glDrawElements(GLES20.GL_LINE_STRIP, 2, GLES20.GL_UNSIGNED_SHORT, index);
     }

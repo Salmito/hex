@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
+import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
@@ -113,15 +114,15 @@ public class Hexagon implements Thing {
     }
 
     @Override
-    public void draw(long dt) {
+    public void draw(long dt, Program program) {
         HexBuffers buffers = getBuffers();
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers.vertices);
-        GLES20.glVertexAttribPointer(program.getAttrib("a_Position"), mPositionDataSize, GLES20.GL_FLOAT, false, 0, 0);
-        GLES20.glEnableVertexAttribArray(program.getAttrib("a_Position"));
+        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Position"), mPositionDataSize, GLES20.GL_FLOAT, false, 0, 0);
+        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Position"));
 
-        Matrix.setIdentityM(program.getmModelMatrix(), 0);
-        Matrix.translateM(program.getmModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
+        Matrix.setIdentityM(this.program.getmModelMatrix(), 0);
+        Matrix.translateM(this.program.getmModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
 
         if (rotate) {
             long time = SystemClock.uptimeMillis() - lastFlip;
@@ -134,26 +135,26 @@ public class Hexagon implements Thing {
                     color = flipColor;
                     flipColor = -1;
                 }
-                Matrix.rotateM(program.getmModelMatrix(), 0, rotateAngle, upX, upY, upZ);
+                Matrix.rotateM(this.program.getmModelMatrix(), 0, rotateAngle, upX, upY, upZ);
             }
         }
         HexColor.setColor(color);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers.color);
-        GLES20.glVertexAttribPointer(program.getAttrib("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, 0, HexColor.offset);
-        GLES20.glEnableVertexAttribArray(program.getAttrib("a_Color"));
+        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, 0, HexColor.offset);
+        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Color"));
 
-        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmViewMatrix(), 0, program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmProjectionMatrix(), 0, program.getmMVPMatrix(), 0);
-        GLES20.glUniformMatrix4fv(program.getUniform("u_MVPMatrix"), 1, false, program.getmMVPMatrix(), 0);
+        Matrix.multiplyMM(this.program.getmMVPMatrix(), 0, this.program.getmViewMatrix(), 0, this.program.getmModelMatrix(), 0);
+        Matrix.multiplyMM(this.program.getmMVPMatrix(), 0, this.program.getmProjectionMatrix(), 0, this.program.getmMVPMatrix(), 0);
+        GLES20.glUniformMatrix4fv(this.program.getUniform("u_MVPMatrix"), 1, false, this.program.getmMVPMatrix(), 0);
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, buffers.index);
         GLES20.glDrawElements(GLES20.GL_TRIANGLE_FAN, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
 
         HexColor.setColor(HexColor.WHITE);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers.color);
-        GLES20.glVertexAttribPointer(program.getAttrib("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, 0, HexColor.offset);
-        GLES20.glEnableVertexAttribArray(program.getAttrib("a_Color"));
+        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, 0, HexColor.offset);
+        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Color"));
 
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, buffers.indexwire);
         GLES20.glDrawElements(GLES20.GL_LINE_LOOP, indicesWire.length, GLES20.GL_UNSIGNED_SHORT, 0);

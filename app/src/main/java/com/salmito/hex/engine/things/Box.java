@@ -3,6 +3,7 @@ package com.salmito.hex.engine.things;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
@@ -234,13 +235,13 @@ public class Box implements Thing {
     }
 
     @Override
-    public void draw(long time) {
+    public void draw(long time, Program program) {
 
 
-        HexProgram program = HexProgram.getProgram();
+        HexProgram p = HexProgram.getProgram();
 
-        Matrix.setIdentityM(program.getmModelMatrix(), 0);
-        Matrix.translateM(program.getmModelMatrix(), 0, center.getX(), center.getY(), center.getZ());
+        Matrix.setIdentityM(p.getmModelMatrix(), 0);
+        Matrix.translateM(p.getmModelMatrix(), 0, center.getX(), center.getY(), center.getZ());
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
         GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, 0);
@@ -250,18 +251,18 @@ public class Box implements Thing {
         GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, 0);
         GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Color"));
 
-        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmViewMatrix(), 0, program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmProjectionMatrix(), 0, program.getmMVPMatrix(), 0);
+        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmViewMatrix(), 0, p.getmModelMatrix(), 0);
+        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmProjectionMatrix(), 0, p.getmMVPMatrix(), 0);
 
-        GLES20.glUniformMatrix4fv(program.getUniform("u_MVPMatrix"), 1, false, program.getmMVPMatrix(), 0);
+        GLES20.glUniformMatrix4fv(p.getUniform("u_MVPMatrix"), 1, false, p.getmMVPMatrix(), 0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
         GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-        Matrix.setIdentityM(program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmViewMatrix(), 0, program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(program.getmMVPMatrix(), 0, program.getmProjectionMatrix(), 0, program.getmMVPMatrix(), 0);
+        Matrix.setIdentityM(p.getmModelMatrix(), 0);
+        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmViewMatrix(), 0, p.getmModelMatrix(), 0);
+        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmProjectionMatrix(), 0, p.getmMVPMatrix(), 0);
     }
 
     @Override

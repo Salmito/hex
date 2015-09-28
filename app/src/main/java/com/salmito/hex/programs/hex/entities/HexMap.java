@@ -2,6 +2,7 @@ package com.salmito.hex.programs.hex.entities;
 
 import android.os.SystemClock;
 
+import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
@@ -61,13 +62,13 @@ public class HexMap implements Thing {
     }
 
     @Override
-    public void draw(long time) {
-        Point3f screenTop = program.getScreenTop();
-        Point3f screenBottom = program.getScreenBottom();
+    public void draw(long time, Program program) {
+        Point3f screenTop = this.program.getScreenTop();
+        Point3f screenBottom = this.program.getScreenBottom();
 
 
         for(Hexagon x:map.values()) {
-            x.draw(time);
+            x.draw(time, HexProgram.getProgram());
         }
     }
 

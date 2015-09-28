@@ -3,6 +3,7 @@ package com.salmito.hex.engine.things.camera;
 import android.opengl.GLU;
 import android.opengl.Matrix;
 
+import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.engine.things.geometry.Vector3f;
@@ -83,7 +84,7 @@ public class Camera implements Thing {
     }
 
     @Override
-    public void draw(long time) {
+    public void draw(long time, Program program) {
         lookAt();
     }
 

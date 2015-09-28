@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * Created by tiago on 8/13/2015.
  */
-public abstract class Program implements Thing {
+public abstract class Program {
     protected final HashMap<String, Integer> uniforms;
     protected final HashMap<String, Integer> attribs;
     protected int programHandle;
@@ -131,4 +131,5 @@ public abstract class Program implements Thing {
     public void onSwipeBottom() {
     }
 
+    public abstract void draw(long dt);
 }

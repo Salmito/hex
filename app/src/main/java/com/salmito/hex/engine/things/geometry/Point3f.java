@@ -1,5 +1,6 @@
 package com.salmito.hex.engine.things.geometry;
 
+import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.util.Constants;
 
@@ -56,7 +57,7 @@ public class Point3f implements Thing {
     }
 
     @Override
-    public void draw(long time) {
+    public void draw(long time, Program program) {
 
     }
 

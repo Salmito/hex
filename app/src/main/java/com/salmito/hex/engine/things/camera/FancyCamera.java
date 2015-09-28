@@ -2,6 +2,7 @@ package com.salmito.hex.engine.things.camera;
 
 import android.util.Log;
 
+import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.things.geometry.Line3f;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.math.easing.EasingFunction;
@@ -38,7 +39,7 @@ public class FancyCamera extends Camera {
     }
 
     @Override
-    public void draw(long dt) {
+    public void draw(long dt, Program program) {
 
         if(remaining_time-dt<=0) {
             lookAt();
