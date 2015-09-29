@@ -1,29 +1,16 @@
-package com.salmito.hex.programs.mvp;
+package com.salmito.hex.programs.camera;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
-import android.view.MotionEvent;
 
-import com.salmito.hex.engine.Program;
+import com.salmito.hex.engine.things.geometry.Point2f;
+import com.salmito.hex.programs.Program;
 import com.salmito.hex.engine.Thing;
-import com.salmito.hex.engine.things.Box;
-import com.salmito.hex.engine.things.camera.Camera;
-import com.salmito.hex.engine.things.geometry.Line3f;
 import com.salmito.hex.engine.things.geometry.Point3f;
-import com.salmito.hex.math.easing.EasingFunction;
-import com.salmito.hex.programs.hex.entities.HexColor;
-import com.salmito.hex.programs.hex.entities.HexCoord;
-import com.salmito.hex.programs.hex.entities.HexMap;
-import com.salmito.hex.programs.hex.entities.Hexagon;
-import com.salmito.hex.util.GLHelper;
 
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by tiago on 8/13/2015.
@@ -102,12 +89,12 @@ public abstract class CameraProgram extends Program {
         }
     }
 
-    public Point3f getScreenBottom() {
-        return new Point3f(camera.unproject(0, height));
+    public Point2f getScreenBottom() {
+        return camera.unproject(0, height);
     }
 
 
-    public Point3f getScreenTop() {
+    public Point2f getScreenTop() {
         return camera.unproject(width, 0);
     }
 

@@ -1,8 +1,7 @@
 package com.salmito.hex.engine.things.geometry;
 
-import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
-import com.salmito.hex.programs.mvp.CameraProgram;
+import com.salmito.hex.programs.camera.CameraProgram;
 
 /**
  * Created by Tiago on 16/09/2015.

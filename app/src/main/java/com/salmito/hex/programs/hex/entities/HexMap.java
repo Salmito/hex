@@ -2,11 +2,10 @@ package com.salmito.hex.programs.hex.entities;
 
 import android.os.SystemClock;
 
-import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
-import com.salmito.hex.programs.mvp.CameraProgram;
+import com.salmito.hex.programs.camera.CameraProgram;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,9 +61,6 @@ public class HexMap implements Thing {
 
     @Override
     public void draw(long time, CameraProgram program) {
-        Point3f screenTop = program.getScreenTop();
-        Point3f screenBottom = program.getScreenBottom();
-
         for(Hexagon x:map.values()) {
             x.draw(time, HexProgram.getProgram());
         }

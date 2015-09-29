@@ -1,17 +1,17 @@
-package com.salmito.hex.engine.things.camera;
+package com.salmito.hex.programs.camera;
 
 import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Line3f;
+import com.salmito.hex.engine.things.geometry.Point2f;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.engine.things.geometry.Vector3f;
 import com.salmito.hex.math.easing.EasingFunction;
 import com.salmito.hex.math.easing.Linear;
-import com.salmito.hex.programs.mvp.CameraProgram;
+import com.salmito.hex.programs.camera.CameraProgram;
 
 public class Camera implements Thing {
     private final Point3f eye;
@@ -74,7 +74,7 @@ public class Camera implements Thing {
      * @param y Y resolution in pixels
      * @return the xyz position in world coordinates
      */
-    public Point3f unproject(int x, int y) {
+    public Point2f unproject(int x, int y) {
         float[] objCoordsnear = new float[4];
         float[] objCoordsfar = new float[4];
         GLU.gluUnProject(x, mView[3] - y, 0.0f, mViewMatrix, 0, mProjectionMatrix, 0, mView, 0, objCoordsnear, 0);
@@ -94,10 +94,10 @@ public class Camera implements Thing {
 
         //Intersection of near-far line with plane z=0
         float[] ret = new float[4];
-        return new Point3f(
+        return new Point2f(
                 objCoordsnear[0] + u * (objCoordsfar[0] - objCoordsnear[0]),
-                objCoordsnear[1] + u * (objCoordsfar[1] - objCoordsnear[1]),
-                0.0f
+                objCoordsnear[1] + u * (objCoordsfar[1] - objCoordsnear[1])
+
         );
     }
 

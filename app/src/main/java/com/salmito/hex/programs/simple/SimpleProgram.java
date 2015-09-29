@@ -3,7 +3,7 @@ package com.salmito.hex.programs.simple;
 
 import android.opengl.GLES20;
 
-import com.salmito.hex.engine.Program;
+import com.salmito.hex.programs.Program;
 import com.salmito.hex.util.Constants;
 import com.salmito.hex.util.GLHelper;
 

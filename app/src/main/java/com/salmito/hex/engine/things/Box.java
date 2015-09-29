@@ -3,11 +3,10 @@ package com.salmito.hex.engine.things;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
-import com.salmito.hex.programs.mvp.CameraProgram;
+import com.salmito.hex.programs.camera.CameraProgram;
 import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;

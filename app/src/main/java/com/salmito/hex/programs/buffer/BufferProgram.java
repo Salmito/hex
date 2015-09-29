@@ -1,10 +1,9 @@
-package com.salmito.hex.programs.hex;
+package com.salmito.hex.programs.buffer;
 
 import android.opengl.GLES20;
 import android.view.MotionEvent;
 
-import com.salmito.hex.engine.Program;
-import com.salmito.hex.engine.Target;
+import com.salmito.hex.programs.Program;
 import com.salmito.hex.programs.background.BackgroundProgram;
 
 /**

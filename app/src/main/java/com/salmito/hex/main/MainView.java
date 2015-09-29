@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import com.salmito.hex.engine.Program;
+import com.salmito.hex.programs.Program;
 
 import static com.salmito.hex.main.MainRenderer.getPrograms;
 

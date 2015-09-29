@@ -1,4 +1,4 @@
-package com.salmito.hex.engine;
+package com.salmito.hex.programs;
 
 import android.opengl.GLES20;
 import android.view.MotionEvent;

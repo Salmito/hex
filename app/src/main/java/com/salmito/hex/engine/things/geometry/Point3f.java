@@ -1,7 +1,7 @@
 package com.salmito.hex.engine.things.geometry;
 
 import com.salmito.hex.engine.Thing;
-import com.salmito.hex.programs.mvp.CameraProgram;
+import com.salmito.hex.programs.camera.CameraProgram;
 import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;

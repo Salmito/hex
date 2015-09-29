@@ -1,6 +1,6 @@
 package com.salmito.hex.engine;
 
-import com.salmito.hex.programs.mvp.CameraProgram;
+import com.salmito.hex.programs.camera.CameraProgram;
 
 /**
  * Created by tiago on 8/13/2015.

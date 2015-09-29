@@ -23,7 +23,7 @@ public class HexCoord {
     };
 
     private static HexCoord direction(int direction /* 0 to 5 */) {
-        return directions[direction%6];
+        return directions[direction % 6];
     }
 
     public HexCoord neighbor(int direction) {
@@ -62,7 +62,7 @@ public class HexCoord {
     }
 
     public int getY() {
-        return -r-q;
+        return -r - q;
     }
 
     public int getZ() {
@@ -89,7 +89,7 @@ public class HexCoord {
     }
 
     public int distance(HexCoord p) {
-         return subtract(this, p).length();
+        return subtract(this, p).length();
     }
 
     public HexCoord[] getLine(HexCoord b) {
@@ -118,13 +118,17 @@ public class HexCoord {
         return new HexCoord(a.getX() * k, a.getY() * k, a.getZ() * k);
     }
 
+    public static HexCoord geo_to_hex(Point2f coord, HexLayout layout) {
+        return geo_to_hex(coord.getX(), coord.getY(), layout);
+    }
+
     public static HexCoord geo_to_hex(float x, float y, HexLayout layout) {
         HexOrientation M = layout.getOrientation();
         Point2f pt = new Point2f((x - layout.getOrigin().getX()) / layout.getSize().getX(),
                 (y - layout.getOrigin().getY()) / layout.getSize().getY());
         float q = M.b0 * pt.getX() + M.b1 * pt.getY();
         float r = M.b2 * pt.getX() + M.b3 * pt.getY();
-        return new HexFractionalCoord(q, -q -r, r).round();
+        return new HexFractionalCoord(q, -q - r, r).round();
     }
 
     public Point2f to_geo(HexLayout layout) {

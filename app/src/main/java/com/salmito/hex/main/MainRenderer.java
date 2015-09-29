@@ -5,7 +5,7 @@ import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.salmito.hex.engine.Program;
+import com.salmito.hex.programs.Program;
 import com.salmito.hex.programs.hex.HexProgram;
 
 import java.util.ArrayList;

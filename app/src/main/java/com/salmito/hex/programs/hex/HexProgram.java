@@ -9,13 +9,13 @@ import com.salmito.hex.engine.things.geometry.Line3f;
 import com.salmito.hex.engine.things.geometry.Point2f;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.math.easing.EasingFunction;
+import com.salmito.hex.programs.camera.CameraProgram;
 import com.salmito.hex.programs.hex.entities.HexColor;
 import com.salmito.hex.programs.hex.entities.HexCoord;
 import com.salmito.hex.programs.hex.entities.HexLayout;
 import com.salmito.hex.programs.hex.entities.HexMap;
 import com.salmito.hex.programs.hex.entities.HexOrientation;
 import com.salmito.hex.programs.hex.entities.Hexagon;
-import com.salmito.hex.programs.mvp.CameraProgram;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,8 +27,6 @@ public class HexProgram extends CameraProgram {
 
     public static HexLayout layout = new HexLayout(HexOrientation.POINTY, new Point2f(1f, 1f), new Point2f(0f, 0f));
 
-    final static int[][] evenNeighbors = {{1, 0}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}};
-    final static int[][] oddNeighbors = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {0, 1}, {1, 1}};
     private static final String TAG = HexProgram.class.getName();
 
     private static final HexMap map = new HexMap(100);
@@ -92,7 +90,13 @@ public class HexProgram extends CameraProgram {
         coordinates = getCamera().unproject(x, y);
         t = HexCoord.geo_to_hex(coordinates.getX(), coordinates.getY(), layout);
         Log.d(TAG, "Double tap detected in " + (t.getQ()) + " " + (t.getR()) + " " + getMap().hasHexagon(t));
-        touch(t, 1);
+        Hexagon h = touch(t, 1);
+
+        Point3f center = h.getCenter();
+        Point3f p1 = new Point3f(center.getX(), center.getY() - 5f, cameraHeight);
+        Point3f p2 = new Point3f(center.getX(), center.getY(), 0f);
+
+        getCamera().moveTo(p1, p2, 1f, EasingFunction.easings[18]);
     }
 
     @Override
@@ -109,41 +113,44 @@ public class HexProgram extends CameraProgram {
         Hexagon h = touch(t);
     }
 
+    //    HexLayout l1 = new HexLayout(HexOrientation.FLAT, new Point2f(1f, 1f), new Point2f(0f, 0f));
+//    HexLayout l2 = new HexLayout(HexOrientation.POINTY, new Point2f(1f, 1f), new Point2f(0f, 0f));
+////    HexLayout cur = l2;
     @Override
     public void onLongPress(MotionEvent e) {
         int x = (int) e.getX();
         int y = (int) e.getY();
-       // layout=new HexLayout(HexOrientation.FLAT,new Point2f(1f,1f),new Point2f(0f,0f));
+
         HexCoord t;
 
         Log.d(TAG, "Single tap detected in " + e.getX() + ", " + e.getY());
         Log.d(TAG, "Eye pos: " + getCamera().getEye() + ", " + getCamera().getLook());
-        Point3f c = getCamera().unproject(x, y);
-        t = HexCoord.geo_to_hex(c.getX(), c.getY(), layout);
 
-        Hexagon h = touch(t);
+        HexCoord bottomLeftCoord = HexCoord.geo_to_hex(getCamera().unproject(0, height), layout);
+        HexCoord topLeftCoord = HexCoord.geo_to_hex(getCamera().unproject(0, 0), layout);
+        HexCoord bottomRightCoord = HexCoord.geo_to_hex(getCamera().unproject(width, height), layout);
+        HexCoord topRightCoord = HexCoord.geo_to_hex(getCamera().unproject(width, 0), layout);
 
-        Point3f center = h.getCenter();
-        Point3f p1 = new Point3f(center.getX(), center.getY() - 5f, cameraHeight);
-        Point3f p2 = new Point3f(center.getX(), center.getY(), 0f);
+        touch(bottomLeftCoord);
+        touch(topLeftCoord);
+        touch(bottomRightCoord);
+        touch(topRightCoord);
 
-        getCamera().moveTo(p1, p2, 1f, EasingFunction.easings[curEasing++ % EasingFunction.easings.length]);
-
-        if (coord1 == null) {
-            coord1 = t;
-        } else {
-            for (HexCoord l : coord1.getLine(t)) {
-                touch(l);
-            }
-            coord1 = null;
+        for (HexCoord l : bottomLeftCoord.getLine(topLeftCoord)) {
+            touch(l);
+        }
+        for (HexCoord l : topLeftCoord.getLine(topRightCoord)) {
+            touch(l);
         }
 
-        c = getCamera().unproject((int) e.getX(), (int) e.getY());
-        t = HexCoord.geo_to_hex(c.getX(), c.getY(), layout);
-        h = getMap().getHexagon(t);
+        for (HexCoord l : topRightCoord.getLine(bottomRightCoord)) {
+            touch(l);
+        }
 
-        Log.d(TAG, "Hexagon info: Coordinates: " + h.getCoordinates());
-        Log.d(TAG, "Hexagon info: Center: " + h.getCenter());
+        for (HexCoord l : bottomRightCoord.getLine(bottomLeftCoord)) {
+            touch(l);
+        }
+
     }
 
     private HexCoord coord1;
@@ -178,21 +185,11 @@ public class HexProgram extends CameraProgram {
         previousY = y;
     }
 
-    public Point3f getScreenBottom() {
-        return new Point3f(getCamera().unproject(0, height));
-    }
-
-
-    public Point3f getScreenTop() {
-        return getCamera().unproject(width, 0);
-    }
-
-
     private Hexagon touch(final HexCoord t, final int ttl) {
         if (ttl > 0) {
             for (int i = 0; i < 6; i++) {
                 Timer t1 = new Timer("t");
-                final int p=i;
+                final int p = i;
                 t1.schedule(new TimerTask() {
                     @Override
                     public void run() {
@@ -204,7 +201,7 @@ public class HexProgram extends CameraProgram {
         }
 
         Hexagon hexagon = getMap().getHexagon(t);
-     //   hexagon.setColor((hexagon.getColor() + 1) % (HexColor.mColorNumber - 1));
+        //   hexagon.setColor((hexagon.getColor() + 1) % (HexColor.mColorNumber - 1));
         hexagon.flip((hexagon.getColor() + 1) % (HexColor.mColorNumber - 1), i);
 
         box.move(hexagon.getCenter());

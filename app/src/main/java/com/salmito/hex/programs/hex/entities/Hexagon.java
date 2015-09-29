@@ -1,6 +1,5 @@
 package com.salmito.hex.programs.hex.entities;
 
-import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.SystemClock;
@@ -9,7 +8,7 @@ import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point2f;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
-import com.salmito.hex.programs.mvp.CameraProgram;
+import com.salmito.hex.programs.camera.CameraProgram;
 import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;
@@ -106,7 +105,7 @@ public class Hexagon implements Thing {
         mHexagonIndices.rewind();
 //        Matrix.setIdentityM(this.program.getModelMatrix(), 0);
 //        Matrix.translateM(this.program.getModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
-        program.drawBuffer(mHexagonVertices, HexColor.getColor(1f,0f,0f,1f), mHexagonIndices, GLES20.GL_LINE_LOOP);
+        program.drawBuffer(mHexagonVertices, HexColor.getColor(1f, 0f, 0f, 1f), mHexagonIndices, GLES20.GL_LINE_LOOP);
         Matrix.setIdentityM(program.getModelMatrix(), 0);
     }
 

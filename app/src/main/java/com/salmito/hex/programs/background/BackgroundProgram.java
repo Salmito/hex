@@ -5,7 +5,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.salmito.hex.engine.Program;
+import com.salmito.hex.programs.Program;
 import com.salmito.hex.main.MainRenderer;
 import com.salmito.hex.util.Constants;
 import com.salmito.hex.util.GLHelper;
