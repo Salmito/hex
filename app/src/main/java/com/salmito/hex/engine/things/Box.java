@@ -7,8 +7,8 @@ import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
+import com.salmito.hex.programs.mvp.CameraProgram;
 import com.salmito.hex.util.Constants;
-import com.salmito.hex.util.GLHelper;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -128,39 +128,15 @@ public class Box implements Thing {
     private float dz;
 
     private FloatBuffer mVertices;
-
-    private int indicesBuffer;
-    private int normalsBuffer;
-    private int verticesBuffer;
-    private int colorBuffer;
     private Point3f center;
 
     public Box(Point3f center, float dx, float dy, float dz) {
         this.center = center;
-        int[] i = new int[3];
-        GLES20.glGenBuffers(3, i, 0);
-        verticesBuffer = 0;
-        indicesBuffer = i[0];
-        normalsBuffer = i[1];
-        colorBuffer = i[2];
-
         this.set(dx, dy, dz);
 
         mColors.position(0);
         mIndices.position(0);
         mNormals.position(0);
-
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-        GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mIndices.capacity() * Constants.bytesPerShort, mIndices, GLES20.GL_STATIC_DRAW);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalsBuffer);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mNormals.capacity() * Constants.bytesPerFloat, mNormals, GLES20.GL_STATIC_DRAW);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBuffer);
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mColors.capacity() * Constants.bytesPerFloat, mColors, GLES20.GL_DYNAMIC_DRAW);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     public Box(Point3f center) {
@@ -222,47 +198,40 @@ public class Box implements Thing {
         };
         this.mVertices = ByteBuffer.allocateDirect(vertices.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
         mVertices.position(0);
-        if (verticesBuffer == 0) {
-            verticesBuffer = GLHelper.createBuffer();
-            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mVertices.capacity() * Constants.bytesPerFloat, mVertices, GLES20.GL_DYNAMIC_DRAW);
-            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        } else {
-            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
-            GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, mVertices.capacity() * Constants.bytesPerFloat, mVertices);
-            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        }
     }
 
     @Override
-    public void draw(long time, Program program) {
-
-
+    public void draw(long time, CameraProgram program) {
         HexProgram p = HexProgram.getProgram();
 
-        Matrix.setIdentityM(p.getmModelMatrix(), 0);
-        Matrix.translateM(p.getmModelMatrix(), 0, center.getX(), center.getY(), center.getZ());
+        Matrix.setIdentityM(p.getModelMatrix(), 0);
+        Matrix.translateM(p.getModelMatrix(), 0, center.getX(), center.getY(), center.getZ());
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
-        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, 0);
-        GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Position"));
+        mVertices.rewind();
+        mColors.rewind();
+        mIndices.rewind();
+        p.drawBuffer(mVertices, mColors, mIndices, GLES20.GL_TRIANGLES);
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBuffer);
-        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, 0);
-        GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Color"));
-
-        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmViewMatrix(), 0, p.getmModelMatrix(), 0);
-        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmProjectionMatrix(), 0, p.getmMVPMatrix(), 0);
-
-        GLES20.glUniformMatrix4fv(p.getUniform("u_MVPMatrix"), 1, false, p.getmMVPMatrix(), 0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-        Matrix.setIdentityM(p.getmModelMatrix(), 0);
-        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmViewMatrix(), 0, p.getmModelMatrix(), 0);
-        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmProjectionMatrix(), 0, p.getmMVPMatrix(), 0);
+//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
+//        GLES20.glVertexAttribPointer(p.getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, 0);
+//        GLES20.glEnableVertexAttribArray(p.getAttrib("a_Position"));
+//
+//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBuffer);
+//        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, 0);
+//        GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Color"));
+//
+//        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmViewMatrix(), 0, p.getModelMatrix(), 0);
+//        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmProjectionMatrix(), 0, p.getmMVPMatrix(), 0);
+//
+//        GLES20.glUniformMatrix4fv(p.getUniform("u_MVPMatrix"), 1, false, p.getmMVPMatrix(), 0);
+//        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+//        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
+//
+//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+//        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+//        Matrix.setIdentityM(p.getModelMatrix(), 0);
+//        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmViewMatrix(), 0, p.getModelMatrix(), 0);
+//        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmProjectionMatrix(), 0, p.getmMVPMatrix(), 0);
     }
 
     @Override

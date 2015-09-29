@@ -8,6 +8,7 @@ import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
+import com.salmito.hex.programs.mvp.CameraProgram;
 import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;
@@ -37,7 +38,7 @@ public class Hexagon implements Thing {
     public static final FloatBuffer mHexagonVertices = ByteBuffer.allocateDirect(vertices.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
     public static float xF = 0.0f;
     public static float yF = 0.0f;
-    private static HexBuffers buffers;
+ //   private static HexBuffers buffers;
     private final Point3f center;
     private int color = HexColor.WHITE;
     private float rotateAngle = 90.0f;
@@ -77,12 +78,12 @@ public class Hexagon implements Thing {
         return program.getMap().getHexagon(coordinates.getDirection(dir));
     }
 
-    private static HexBuffers getBuffers() {
-        if (buffers == null) {
-            buffers = new HexBuffers();
-        }
-        return buffers;
-    }
+//    private static HexBuffers getBuffers() {
+//        if (buffers == null) {
+//            buffers = new HexBuffers();
+//        }
+//        return buffers;
+//    }
 
     public float getRotateAngle() {
         return rotateAngle;
@@ -114,15 +115,10 @@ public class Hexagon implements Thing {
     }
 
     @Override
-    public void draw(long dt, Program program) {
-        HexBuffers buffers = getBuffers();
+    public void draw(long dt, CameraProgram program) {
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers.vertices);
-        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Position"), mPositionDataSize, GLES20.GL_FLOAT, false, 0, 0);
-        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Position"));
-
-        Matrix.setIdentityM(this.program.getmModelMatrix(), 0);
-        Matrix.translateM(this.program.getmModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
+        Matrix.setIdentityM(this.program.getModelMatrix(), 0);
+        Matrix.translateM(this.program.getModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
 
         if (rotate) {
             long time = SystemClock.uptimeMillis() - lastFlip;
@@ -135,71 +131,23 @@ public class Hexagon implements Thing {
                     color = flipColor;
                     flipColor = -1;
                 }
-                Matrix.rotateM(this.program.getmModelMatrix(), 0, rotateAngle, upX, upY, upZ);
+                Matrix.rotateM(this.program.getModelMatrix(), 0, rotateAngle, upX, upY, upZ);
             }
         }
-        HexColor.setColor(color);
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers.color);
-        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, 0, HexColor.offset);
-        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Color"));
+        mHexagonVertices.rewind();
+        mHexagonIndices.rewind();
+        program.drawBuffer(mHexagonVertices, HexColor.getColor(color), mHexagonIndices, GLES20.GL_TRIANGLE_FAN);
 
-        Matrix.multiplyMM(this.program.getmMVPMatrix(), 0, this.program.getmViewMatrix(), 0, this.program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(this.program.getmMVPMatrix(), 0, this.program.getmProjectionMatrix(), 0, this.program.getmMVPMatrix(), 0);
-        GLES20.glUniformMatrix4fv(this.program.getUniform("u_MVPMatrix"), 1, false, this.program.getmMVPMatrix(), 0);
-
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, buffers.index);
-        GLES20.glDrawElements(GLES20.GL_TRIANGLE_FAN, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
-
-        HexColor.setColor(HexColor.WHITE);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, buffers.color);
-        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Color"), HexColor.mColorDataSize, GLES20.GL_FLOAT, false, 0, HexColor.offset);
-        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Color"));
-
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, buffers.indexwire);
-        GLES20.glDrawElements(GLES20.GL_LINE_LOOP, indicesWire.length, GLES20.GL_UNSIGNED_SHORT, 0);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+        mHexagonIndicesWire.rewind();
+        mHexagonVertices.rewind();
+        Matrix.setIdentityM(this.program.getModelMatrix(), 0);
+        Matrix.translateM(this.program.getModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
+        program.drawBuffer(mHexagonVertices, HexColor.getColor(HexColor.WHITE), mHexagonIndicesWire, GLES20.GL_LINE_LOOP);
     }
 
     @Override
     public void clean() {
 
-    }
-
-    static private class HexBuffers {
-        int vertices;
-        int index;
-        int indexwire;
-        int color;
-
-        private HexBuffers() {
-            int[] i = new int[4];
-            GLES20.glGenBuffers(4, i, 0);
-            vertices = i[0];
-            index = i[1];
-            indexwire = i[2];
-            color = i[3];
-
-            mHexagonVertices.position(0);
-            mHexagonIndices.position(0);
-            mHexagonIndicesWire.position(0);
-            HexColor.mHexagonColors.position(0);
-
-            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertices);
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, mHexagonVertices.capacity() * Constants.bytesPerFloat, mHexagonVertices, GLES20.GL_STATIC_DRAW);
-
-            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, color);
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, HexColor.mHexagonColors.capacity() * Constants.bytesPerFloat, HexColor.mHexagonColors, GLES20.GL_STATIC_DRAW);
-
-            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, index);
-            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mHexagonIndices.capacity() * Constants.bytesPerShort, mHexagonIndices, GLES20.GL_STATIC_DRAW);
-
-            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexwire);
-            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, mHexagonIndicesWire.capacity() * Constants.bytesPerShort, mHexagonIndicesWire, GLES20.GL_STATIC_DRAW);
-
-            GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-            GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-        }
     }
 }

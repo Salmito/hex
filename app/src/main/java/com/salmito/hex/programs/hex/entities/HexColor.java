@@ -1,6 +1,5 @@
 package com.salmito.hex.programs.hex.entities;
 
-import com.salmito.hex.main.MainRenderer;
 import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;
@@ -17,10 +16,8 @@ public class HexColor {
     final public static int BLACK = 6;
     final public static int mColorNumber = 7;
 
-    public static final int mColorDataSize = 4;
-    public static final int mColorStrideBytes = mColorDataSize * Constants.bytesPerFloat;
-    public static final int mColorSize = 7;
-    public static final int mColorByteSize = mColorDataSize * mColorSize;
+    private static final int mColorDataSize = 4;
+    private static final int mColorSize = 7;
 
     public static int offset = 0;
     private static final float colors[] = {
@@ -88,11 +85,13 @@ public class HexColor {
             0.0f, 0.0f, 0.0f, 1.0f,  // right bottom
             0.0f, 0.0f, 0.0f, 1.0f,  // right top
     };
-    public static final FloatBuffer mHexagonColors = ByteBuffer.allocateDirect(colors.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(colors);
+    private static final FloatBuffer mHexagonColors = ByteBuffer.allocateDirect(colors.length * Constants.bytesPerFloat)
+            .order(ByteOrder.nativeOrder()).asFloatBuffer().put(colors);
 
-    public static void setColor(int color) {
-        offset=color*mColorByteSize*Constants.bytesPerFloat;
-        //mHexagonColors.position(color * mColorSize);
+    public static FloatBuffer getColor(int color) {
+        //offset=color*mColorByteSize*Constants.bytesPerFloat;
+        mHexagonColors.position(color * mColorSize * mColorDataSize);
+        return mHexagonColors;
     }
 
 }

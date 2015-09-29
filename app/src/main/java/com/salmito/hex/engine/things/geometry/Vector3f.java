@@ -2,6 +2,7 @@ package com.salmito.hex.engine.things.geometry;
 
 import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
+import com.salmito.hex.programs.mvp.CameraProgram;
 
 /**
  * Created by Tiago on 16/09/2015.
@@ -31,7 +32,7 @@ public class Vector3f implements Thing {
     }
 
     @Override
-    public void draw(long time, Program program) {
+    public void draw(long time, CameraProgram program) {
 
     }
 

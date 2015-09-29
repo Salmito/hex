@@ -5,6 +5,8 @@ import android.view.MotionEvent;
 
 import com.salmito.hex.util.GLHelper;
 
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.HashMap;
 
 /**
@@ -132,4 +134,5 @@ public abstract class Program {
     }
 
     public abstract void draw(long dt);
+
 }

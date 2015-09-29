@@ -1,7 +1,7 @@
 package com.salmito.hex.engine.things.geometry;
 
-import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
+import com.salmito.hex.programs.mvp.CameraProgram;
 import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;
@@ -57,7 +57,7 @@ public class Point3f implements Thing {
     }
 
     @Override
-    public void draw(long time, Program program) {
+    public void draw(long time, CameraProgram program) {
 
     }
 
@@ -110,7 +110,7 @@ public class Point3f implements Thing {
 
     @Override
     public String toString() {
-        return String.format(this.getClass().getSimpleName()+"[x=%s, y=%s, z=%s]", format.format(getX()), format.format(getY()), format.format(getZ()));
+        return String.format(this.getClass().getSimpleName() + "[x=%s, y=%s, z=%s]", format.format(getX()), format.format(getY()), format.format(getZ()));
     }
 
     public void set(Point3f p) {

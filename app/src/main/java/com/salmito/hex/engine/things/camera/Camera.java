@@ -2,28 +2,42 @@ package com.salmito.hex.engine.things.camera;
 
 import android.opengl.GLU;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
+import com.salmito.hex.engine.things.geometry.Line3f;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.engine.things.geometry.Vector3f;
+import com.salmito.hex.math.easing.EasingFunction;
+import com.salmito.hex.math.easing.Linear;
+import com.salmito.hex.programs.mvp.CameraProgram;
 
 public class Camera implements Thing {
-    protected final Point3f eye;
-    protected final Point3f look;
-    protected final Vector3f up;
-    protected float[] mViewMatrix;
-    protected int[] mView;
-    protected float[] mProjectionMatrix;
+    private final Point3f eye;
+    private final Point3f look;
+    private final Vector3f up;
+    private int[] mView;
+    long remaining_time = 0L;
+    long total_time = 0L;
+    private Point3f d_eye;
+    private Point3f d_look;
+    private Point3f s_eye;
+    private Point3f s_look;
+    private EasingFunction cF;
+    private static Linear defaultEasing = new Linear();
+    private float[] mProjectionMatrix;
+    private final float[] mViewMatrix;
 
-    public Camera(float[] mViewMatrix, int[] mView, float[] mProjectionMatrix) {
-        this.mViewMatrix = mViewMatrix;
-        this.mView = mView;
-        this.mProjectionMatrix = mProjectionMatrix;
+    public Camera() {
+        this.mViewMatrix = new float[16];;
+        this.mView  = new int[4];
+        this.mProjectionMatrix =   new float[16];
 
         this.eye = new Point3f(0.0f, -5f, 10f);
         this.look = new Point3f(0f, 0f, 0f);
         this.up = new Vector3f(new Point3f(0f, 1f, 0f));
+        lookAt();
     }
 
     public void lookAt() {
@@ -36,6 +50,17 @@ public class Camera implements Thing {
     public void zoom(float amount) {
         eye.setZ(eye.getZ() + amount);
         lookAt();
+    }
+
+    public void moveTo(Point3f d_eye, Point3f d_look, float dt, EasingFunction f) {
+        Log.d("FancyCamera", "Going to " + d_eye + " looking " + d_look + " in " + dt + "s with " + f.getClass().getSimpleName());
+        remaining_time = (long) (dt * 1000f);
+        total_time = (long) (dt * 1000f);
+        this.d_eye = d_eye;
+        this.d_look = d_look;
+        this.s_eye = new Point3f(eye);
+        this.s_look = new Point3f(look);
+        cF = f;
     }
 
 
@@ -84,8 +109,31 @@ public class Camera implements Thing {
     }
 
     @Override
-    public void draw(long time, Program program) {
+    public void draw(long dt, CameraProgram program) {
+
+        if (remaining_time - dt <= 0) {
+            lookAt();
+            return;
+        }
+
+
+        remaining_time -= dt;
+        float t = 1f - (((float) remaining_time) / total_time);
+
+        t = cF.easy(t);
+
+        Point3f cEye = Line3f.interpolate(s_eye, d_eye, t);
+        Point3f cLook = Line3f.interpolate(s_look, d_look, t);
+        this.look.set(cLook);
+        this.eye.set(cEye);
+        //Log.d("camera", "Moving from " + s_eye + " to " + d_eye + " " + t + " current " + cEye);
+        //Log.d("camera", "Looking from " + s_look + " to " + d_look + " " + t + " current " + cLook);
         lookAt();
+
+    }
+
+    public void moveTo(Point3f d_eye, Point3f d_look, float time) {
+        moveTo(d_eye, d_look, time, defaultEasing);
     }
 
     @Override
@@ -99,5 +147,38 @@ public class Camera implements Thing {
 
     public Point3f getEye() {
         return eye;
+    }
+
+    public float[] getViewMatrix() {
+        return mViewMatrix;
+    }
+
+    public float[] getProjectionMatrix() {
+        return mProjectionMatrix;
+    }
+
+    public int[] getViewport() {
+        return mView;
+    }
+
+    public void setViewport(int i, int i1, int width, int height) {
+
+        mView[0] = i;
+        mView[1] = i1;
+        mView[2] = width;
+        mView[3] = height;
+
+        // Create a new perspective projection matrix. The height will stay the same
+        // while the width will vary as per aspect ratio.
+
+        final float ratio = (float) width / height;
+        final float left = -ratio;
+        final float right = ratio;
+        final float bottom = -1.0f;
+        final float top = 1.0f;
+        final float near = 1.0f;
+        final float far = 100.0f;
+
+        Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
     }
 }

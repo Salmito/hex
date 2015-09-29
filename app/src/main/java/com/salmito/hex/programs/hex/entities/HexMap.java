@@ -6,6 +6,7 @@ import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.programs.hex.HexProgram;
+import com.salmito.hex.programs.mvp.CameraProgram;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,7 +63,7 @@ public class HexMap implements Thing {
     }
 
     @Override
-    public void draw(long time, Program program) {
+    public void draw(long time, CameraProgram program) {
         Point3f screenTop = this.program.getScreenTop();
         Point3f screenBottom = this.program.getScreenBottom();
 

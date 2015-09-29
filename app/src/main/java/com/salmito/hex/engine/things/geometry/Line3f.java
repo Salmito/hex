@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
 import com.salmito.hex.programs.hex.HexProgram;
+import com.salmito.hex.programs.mvp.CameraProgram;
 import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;
@@ -64,21 +65,12 @@ public class Line3f implements Thing {
 
 
     @Override
-    public void draw(long time, Program program) {
-        vertices.rewind();
-
-        Matrix.setIdentityM(this.program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(this.program.getmMVPMatrix(), 0, this.program.getmViewMatrix(), 0, this.program.getmModelMatrix(), 0);
-        Matrix.multiplyMM(this.program.getmMVPMatrix(), 0, this.program.getmProjectionMatrix(), 0, this.program.getmMVPMatrix(), 0);
-        GLES20.glUniformMatrix4fv(this.program.getUniform("u_MVPMatrix"), 1, false, this.program.getmMVPMatrix(), 0);
-
-        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, vertices);
-        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Position"));
-        color.rewind();
-        GLES20.glVertexAttribPointer(this.program.getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, color);
-        GLES20.glEnableVertexAttribArray(this.program.getAttrib("a_Color"));
+    public void draw(long time, CameraProgram p) {
+        Matrix.setIdentityM(this.program.getModelMatrix(), 0);
         index.rewind();
-        GLES20.glDrawElements(GLES20.GL_LINE_STRIP, 2, GLES20.GL_UNSIGNED_SHORT, index);
+        color.rewind();
+        vertices.rewind();
+        p.drawBuffer(vertices, color, index, GLES20.GL_LINE_STRIP);
     }
 
     public void setEnd(Point3f end) {
