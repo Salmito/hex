@@ -1,5 +1,7 @@
 package com.salmito.hex.programs.hex.entities;
 
+import android.graphics.Color;
+
 import com.salmito.hex.util.Constants;
 
 import java.nio.ByteBuffer;
@@ -18,8 +20,7 @@ public class HexColor {
 
     private static final int mColorDataSize = 4;
     private static final int mColorSize = 7;
-
-    public static int offset = 0;
+    private static final int mColorBytes = mColorDataSize * mColorSize * Constants.bytesPerFloat;
     private static final float colors[] = {
             //RED
             1.0f, 0.0f, 0.0f, 1.0f,    //center
@@ -88,10 +89,35 @@ public class HexColor {
     private static final FloatBuffer mHexagonColors = ByteBuffer.allocateDirect(colors.length * Constants.bytesPerFloat)
             .order(ByteOrder.nativeOrder()).asFloatBuffer().put(colors);
 
+    private static FloatBuffer currentColor = ByteBuffer.allocateDirect(mColorBytes)
+            .order(ByteOrder.nativeOrder()).asFloatBuffer();
+
     public static FloatBuffer getColor(int color) {
-        //offset=color*mColorByteSize*Constants.bytesPerFloat;
         mHexagonColors.position(color * mColorSize * mColorDataSize);
         return mHexagonColors;
     }
+
+    public static FloatBuffer getAndroidColor(int color) {
+        currentColor.rewind();
+        for (int i = 0; i < mColorSize; i++) {
+            currentColor.put(new float[]{
+                    Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f
+            });
+        }
+        return currentColor;
+    }
+
+    public static FloatBuffer getColor(float r, float g, float b, float a) {
+         currentColor.rewind();
+        for (int i = 0; i < mColorSize; i++) {
+            currentColor.put(r);
+            currentColor.put(g);
+            currentColor.put(b);
+            currentColor.put(a);
+        }
+        currentColor.rewind();
+        return currentColor;
+    }
+
 
 }
