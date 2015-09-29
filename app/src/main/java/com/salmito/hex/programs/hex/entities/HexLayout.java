@@ -5,12 +5,12 @@ import com.salmito.hex.engine.things.geometry.Point2f;
 /**
  * Created by Tiago on 17/09/2015.
  */
-public class Layout {
+public class HexLayout {
     private HexOrientation orientation;
     private Point2f size;
     private Point2f origin;
 
-    public Layout(HexOrientation orientation_, Point2f size_, Point2f origin_) {
+    public HexLayout(HexOrientation orientation_, Point2f size_, Point2f origin_) {
         this.size = size_;
         this.origin = origin_;
         this.orientation = orientation_;

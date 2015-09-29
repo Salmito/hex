@@ -110,7 +110,7 @@ public abstract class CameraProgram extends Program {
     public Point3f getScreenTop() {
         return camera.unproject(width, 0);
     }
-    
+
     public void drawBuffer(FloatBuffer mVertices, FloatBuffer mColors, ShortBuffer mIndices, int type) {
         GLES20.glVertexAttribPointer(getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, mVertices);
         GLES20.glEnableVertexAttribArray(getAttrib("a_Position"));

@@ -1,26 +1,22 @@
 package com.salmito.hex.programs.hex;
 
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.salmito.hex.engine.Program;
-import com.salmito.hex.engine.Thing;
 import com.salmito.hex.engine.things.Box;
-import com.salmito.hex.engine.things.camera.Camera;
 import com.salmito.hex.engine.things.geometry.Line3f;
+import com.salmito.hex.engine.things.geometry.Point2f;
 import com.salmito.hex.engine.things.geometry.Point3f;
 import com.salmito.hex.math.easing.EasingFunction;
 import com.salmito.hex.programs.hex.entities.HexColor;
 import com.salmito.hex.programs.hex.entities.HexCoord;
+import com.salmito.hex.programs.hex.entities.HexLayout;
 import com.salmito.hex.programs.hex.entities.HexMap;
+import com.salmito.hex.programs.hex.entities.HexOrientation;
 import com.salmito.hex.programs.hex.entities.Hexagon;
 import com.salmito.hex.programs.mvp.CameraProgram;
 
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,6 +24,8 @@ import java.util.TimerTask;
  * Created by tiago on 8/13/2015.
  */
 public class HexProgram extends CameraProgram {
+
+    public static HexLayout layout = new HexLayout(HexOrientation.POINTY, new Point2f(1f, 1f), new Point2f(0f, 0f));
 
     final static int[][] evenNeighbors = {{1, 0}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}};
     final static int[][] oddNeighbors = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {0, 1}, {1, 1}};
@@ -92,7 +90,7 @@ public class HexProgram extends CameraProgram {
         HexCoord t;
 
         coordinates = getCamera().unproject(x, y);
-        t = HexCoord.geo(coordinates.getX(), coordinates.getY());
+        t = HexCoord.geo_to_hex(coordinates.getX(), coordinates.getY(), layout);
         Log.d(TAG, "Double tap detected in " + (t.getQ()) + " " + (t.getR()) + " " + getMap().hasHexagon(t));
         touch(t, 1);
     }
@@ -106,7 +104,7 @@ public class HexProgram extends CameraProgram {
         Log.d(TAG, "Single tap detected in " + e.getX() + ", " + e.getY());
         Log.d(TAG, "Eye pos: " + getCamera().getEye() + ", " + getCamera().getLook());
         Point3f c = getCamera().unproject(x, y);
-        t = HexCoord.geo(c.getX(), c.getY());
+        t = HexCoord.geo_to_hex(c.getX(), c.getY(), layout);
 
         Hexagon h = touch(t);
     }
@@ -115,12 +113,13 @@ public class HexProgram extends CameraProgram {
     public void onLongPress(MotionEvent e) {
         int x = (int) e.getX();
         int y = (int) e.getY();
+       // layout=new HexLayout(HexOrientation.FLAT,new Point2f(1f,1f),new Point2f(0f,0f));
         HexCoord t;
 
         Log.d(TAG, "Single tap detected in " + e.getX() + ", " + e.getY());
         Log.d(TAG, "Eye pos: " + getCamera().getEye() + ", " + getCamera().getLook());
         Point3f c = getCamera().unproject(x, y);
-        t = HexCoord.geo(c.getX(), c.getY());
+        t = HexCoord.geo_to_hex(c.getX(), c.getY(), layout);
 
         Hexagon h = touch(t);
 
@@ -139,9 +138,8 @@ public class HexProgram extends CameraProgram {
             coord1 = null;
         }
 
-
         c = getCamera().unproject((int) e.getX(), (int) e.getY());
-        t = HexCoord.geo(c.getX(), c.getY());
+        t = HexCoord.geo_to_hex(c.getX(), c.getY(), layout);
         h = getMap().getHexagon(t);
 
         Log.d(TAG, "Hexagon info: Coordinates: " + h.getCoordinates());
@@ -192,47 +190,25 @@ public class HexProgram extends CameraProgram {
 
     private Hexagon touch(final HexCoord t, final int ttl) {
         if (ttl > 0) {
-            for (final int[] n : t.getR() % 2 == 0 ? evenNeighbors : oddNeighbors) {
-                getMap().getHexagon(t.getQ() + n[0], t.getR() + n[1]);
-                if (getMap().hasHexagon(t.getQ() + n[0], t.getR() + n[1])) {
-                    Hexagon h = getMap().getHexagon(t.getQ() + n[0], t.getR() + n[1]);
-                    h.flip((h.getColor() + 1) % HexColor.mColorNumber, i);
-                    Timer t1 = new Timer("t");
-
-                    t1.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            //System.out.println("timer");
-                            touch(new HexCoord(t.getQ() + n[0], t.getR() + n[1]), ttl - 1);
-                        }
-                    }, 500);
-                }
+            for (int i = 0; i < 6; i++) {
+                Timer t1 = new Timer("t");
+                final int p=i;
+                t1.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        //System.out.println("timer");
+                        touch(t.neighbor(p), ttl - 1);
+                    }
+                }, 500);
             }
         }
 
         Hexagon hexagon = getMap().getHexagon(t);
+     //   hexagon.setColor((hexagon.getColor() + 1) % (HexColor.mColorNumber - 1));
         hexagon.flip((hexagon.getColor() + 1) % (HexColor.mColorNumber - 1), i);
 
         box.move(hexagon.getCenter());
 
         return hexagon;
-    }
-
-
-    public void drawBuffer(FloatBuffer mVertices, FloatBuffer mColors, ShortBuffer mIndices, int type) {
-        GLES20.glVertexAttribPointer(getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, mVertices);
-        GLES20.glEnableVertexAttribArray(getAttrib("a_Position"));
-
-        GLES20.glVertexAttribPointer(getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, mColors);
-        GLES20.glEnableVertexAttribArray(getAttrib("a_Color"));
-
-        Matrix.multiplyMM(getMVPMatrix(), 0, getCamera().getViewMatrix(), 0, getModelMatrix(), 0);
-        Matrix.multiplyMM(getMVPMatrix(), 0, getCamera().getProjectionMatrix(), 0, getMVPMatrix(), 0);
-
-        GLES20.glUniformMatrix4fv(getUniform("u_MVPMatrix"), 1, false, getMVPMatrix(), 0);
-        GLES20.glDrawElements(type, mIndices.capacity(), GLES20.GL_UNSIGNED_SHORT, mIndices);
-
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 }

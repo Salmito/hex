@@ -71,6 +71,7 @@ public class Line3f implements Thing {
         color.rewind();
         vertices.rewind();
         p.drawBuffer(vertices, color, index, GLES20.GL_LINE_STRIP);
+        Matrix.setIdentityM(p.getModelMatrix(), 0);
     }
 
     public void setEnd(Point3f end) {

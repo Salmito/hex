@@ -127,11 +127,13 @@ public class Box implements Thing {
     private float dy;
     private float dz;
 
-    private FloatBuffer mVertices;
+    private final FloatBuffer mVertices;
     private Point3f center;
 
     public Box(Point3f center, float dx, float dy, float dz) {
         this.center = center;
+        this.mVertices = ByteBuffer.allocateDirect((24*3) * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+
         this.set(dx, dy, dz);
 
         mColors.position(0);
@@ -148,7 +150,7 @@ public class Box implements Thing {
     }
 
     public void move(Point3f center) {
-        this.center = center;
+        this.center.set(center);
     }
 
     public void set(float dx, float dy, float dz) {
@@ -196,8 +198,8 @@ public class Box implements Thing {
                 -dx, dy, -dz,
                 dx, dy, -dz,
         };
-        this.mVertices = ByteBuffer.allocateDirect(vertices.length * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(vertices);
         mVertices.position(0);
+        mVertices.put(vertices);
     }
 
     @Override
@@ -211,27 +213,7 @@ public class Box implements Thing {
         mColors.rewind();
         mIndices.rewind();
         p.drawBuffer(mVertices, mColors, mIndices, GLES20.GL_TRIANGLES);
-
-//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, verticesBuffer);
-//        GLES20.glVertexAttribPointer(p.getAttrib("a_Position"), 3, GLES20.GL_FLOAT, false, 0, 0);
-//        GLES20.glEnableVertexAttribArray(p.getAttrib("a_Position"));
-//
-//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, colorBuffer);
-//        GLES20.glVertexAttribPointer(HexProgram.getProgram().getAttrib("a_Color"), 4, GLES20.GL_FLOAT, false, 0, 0);
-//        GLES20.glEnableVertexAttribArray(HexProgram.getProgram().getAttrib("a_Color"));
-//
-//        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmViewMatrix(), 0, p.getModelMatrix(), 0);
-//        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmProjectionMatrix(), 0, p.getmMVPMatrix(), 0);
-//
-//        GLES20.glUniformMatrix4fv(p.getUniform("u_MVPMatrix"), 1, false, p.getmMVPMatrix(), 0);
-//        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-//        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indices.length, GLES20.GL_UNSIGNED_SHORT, 0);
-//
-//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
-//        GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
-//        Matrix.setIdentityM(p.getModelMatrix(), 0);
-//        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmViewMatrix(), 0, p.getModelMatrix(), 0);
-//        Matrix.multiplyMM(p.getmMVPMatrix(), 0, p.getmProjectionMatrix(), 0, p.getmMVPMatrix(), 0);
+        Matrix.setIdentityM(p.getModelMatrix(), 0);
     }
 
     @Override

@@ -66,8 +66,7 @@ public class HexMap implements Thing {
     public void draw(long time, CameraProgram program) {
         Point3f screenTop = this.program.getScreenTop();
         Point3f screenBottom = this.program.getScreenBottom();
-
-
+        
         for(Hexagon x:map.values()) {
             x.draw(time, HexProgram.getProgram());
         }

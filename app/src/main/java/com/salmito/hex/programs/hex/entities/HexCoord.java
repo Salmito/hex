@@ -1,7 +1,5 @@
 package com.salmito.hex.programs.hex.entities;
 
-import android.util.Log;
-
 import com.salmito.hex.engine.things.geometry.Point2f;
 
 import static java.lang.Math.abs;
@@ -10,13 +8,6 @@ import static java.lang.Math.abs;
  * Created by Tiago on 16/09/2015.
  */
 public class HexCoord {
-    private static float sq = (float) Math.sqrt(3.0);
-    private static float H = Hexagon.radius * (float) Math.sin(Math.PI / 6);
-    private static float height = Hexagon.radius + 2.0f * H;
-    private static float R = Hexagon.radius * (float) Math.cos(Math.PI / 6);
-    private static float M = H / R;
-    private static float width = 2.0f * R;
-
     private final int hash;
     private final int q;
     private final int r;
@@ -35,7 +26,7 @@ public class HexCoord {
         return directions[direction%6];
     }
 
-    private HexCoord neighbor(int direction) {
+    public HexCoord neighbor(int direction) {
         return add(this, direction(direction));
     }
 
@@ -56,40 +47,6 @@ public class HexCoord {
 
     public HexCoord(int x, int y, int z) {
         this(x, z);
-    }
-
-    public static HexCoord geo(float x, float y) {
-
-        x += R;
-        //else x-=R;
-        y += Hexagon.radius;
-        //else y-=Hexagon.radius;
-
-        int Xs = (int) (x / width); //hex coord
-        int Ys = (int) (y / (H + Hexagon.radius));
-
-        float Xi = abs(x - ((float) Xs) * width); //position inside hex
-        float Yi = y - abs(((float) Ys) * (H + Hexagon.radius));
-
-        if (Ys % 2 == 1) { //even line B
-            if (Xi >= R) {
-                if (Yi < (2 * H - Xi * M)) Ys--;
-            } else {
-                if (Yi < (Xi * M)) Ys--;
-                else Xs--;
-            }
-        } else { //odd line A
-            if (Yi < H - Xi * M) {
-                Ys--;
-                Xs--;
-            } else if (Yi < (-H + Xi * M)) Ys--;
-        }
-        //if(Ys<0) Ys=0;
-        //if(Xs<0) Xs=0;
-
-        HexCoord hexCoord = new HexCoord(Xs, Ys);
-        Log.d("HexCoord", "Getting Coord from geo [" + x + ", " + y + "] -> " + hexCoord);
-        return hexCoord;
     }
 
     public int getQ() {
@@ -161,16 +118,16 @@ public class HexCoord {
         return new HexCoord(a.getX() * k, a.getY() * k, a.getZ() * k);
     }
 
-    public static HexFractionalCoord geo_to_hex(float x, float y, Layout layout) {
+    public static HexCoord geo_to_hex(float x, float y, HexLayout layout) {
         HexOrientation M = layout.getOrientation();
         Point2f pt = new Point2f((x - layout.getOrigin().getX()) / layout.getSize().getX(),
                 (y - layout.getOrigin().getY()) / layout.getSize().getY());
         float q = M.b0 * pt.getX() + M.b1 * pt.getY();
         float r = M.b2 * pt.getX() + M.b3 * pt.getY();
-        return new HexFractionalCoord(q, -q -r, r);
+        return new HexFractionalCoord(q, -q -r, r).round();
     }
 
-    public Point2f to_geo(Layout layout) {
+    public Point2f to_geo(HexLayout layout) {
         HexOrientation M = layout.getOrientation();
         float x = (M.f0 * q + M.f1 * r) * layout.getSize().getX();
         float y = (M.f2 * q + M.f3 * r) * layout.getSize().getY();
