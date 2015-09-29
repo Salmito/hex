@@ -1,11 +1,8 @@
 package com.salmito.hex.engine.things.geometry;
 
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
-import com.salmito.hex.engine.Program;
 import com.salmito.hex.engine.Thing;
-import com.salmito.hex.programs.hex.HexProgram;
 import com.salmito.hex.programs.mvp.CameraProgram;
 import com.salmito.hex.util.Constants;
 
@@ -25,9 +22,8 @@ public class Line3f implements Thing {
     private final FloatBuffer vertices;
     private final ShortBuffer index;
     private final FloatBuffer color;
-    private final HexProgram program;
 
-    public Line3f(HexProgram p, Point3f p1, Point3f p2) {
+    public Line3f(Point3f p1, Point3f p2) {
         vertices = ByteBuffer.allocateDirect(6 * Constants.bytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer().put(new float[]{
                 p1.getX(), p1.getY(), p1.getZ(),
                 p2.getX(), p2.getY(), p2.getZ()
@@ -41,7 +37,6 @@ public class Line3f implements Thing {
         });
         this.p1 = new Point3f(vertices, 0);
         this.p2 = new Point3f(vertices, 3);
-        this.program = p;
     }
 
     public Point3f interpolate(float t) {
@@ -64,18 +59,16 @@ public class Line3f implements Thing {
     }
 
 
+    public void setEnd(Point3f end) {
+        p2.set(end);
+    }
+
     @Override
     public void draw(long time, CameraProgram p) {
-        Matrix.setIdentityM(this.program.getModelMatrix(), 0);
         index.rewind();
         color.rewind();
         vertices.rewind();
         p.drawBuffer(vertices, color, index, GLES20.GL_LINE_STRIP);
-        Matrix.setIdentityM(p.getModelMatrix(), 0);
-    }
-
-    public void setEnd(Point3f end) {
-        p2.set(end);
     }
 
     public void setStart(Point3f start) {

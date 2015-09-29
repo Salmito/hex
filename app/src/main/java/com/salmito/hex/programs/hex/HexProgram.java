@@ -31,7 +31,7 @@ public class HexProgram extends CameraProgram {
     final static int[][] oddNeighbors = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {0, 1}, {1, 1}};
     private static final String TAG = HexProgram.class.getName();
 
-    private static final HexMap map = new HexMap(HexProgram.getProgram(), 100);
+    private static final HexMap map = new HexMap(100);
     private static final Box box = new Box(new Point3f(0f, 0f, 0f), 1f, 1f, 1f);
 
     private static HexProgram currentProgram;
@@ -49,7 +49,7 @@ public class HexProgram extends CameraProgram {
         System.out.println("Creating Hex Program");
         cameraHeight = 10f;
         GLES20.glLineWidth(5f);
-        line = new Line3f(this, new Point3f(0f, 0f, 0f), new Point3f(10f, 0f, 0f));
+        line = new Line3f(new Point3f(0f, 0f, 0f), new Point3f(10f, 0f, 0f));
     }
 
     public static HexProgram getProgram() {

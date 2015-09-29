@@ -13,13 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HexMap implements Thing {
 
     private final int size;
-    private final HexProgram program;
     private ConcurrentHashMap<HexCoord, Hexagon> map;
 
-    public HexMap(HexProgram program, int size) {
+    public HexMap(int size) {
         this.size = size;
         map = new ConcurrentHashMap<HexCoord, Hexagon>();
-        this.program = program;
     }
 
     public int getSize() {
@@ -43,7 +41,7 @@ public class HexMap implements Thing {
         final HexCoord p = new HexCoord(i, j);
         Hexagon hex = map.get(p);
         if (hex == null) {
-            hex = new Hexagon(program, p.getQ(), p.getR());
+            hex = new Hexagon(p.getQ(), p.getR());
             map.put(p, hex);
         }
         return hex;
@@ -56,7 +54,7 @@ public class HexMap implements Thing {
     public Hexagon getHexagon(HexCoord p) {
         Hexagon hex = map.get(p);
         if (hex == null) {
-            hex = new Hexagon(program, p.getQ(), p.getR());
+            hex = new Hexagon(p.getQ(), p.getR());
             map.put(p, hex);
         }
         return hex;
@@ -64,9 +62,9 @@ public class HexMap implements Thing {
 
     @Override
     public void draw(long time, CameraProgram program) {
-        Point3f screenTop = this.program.getScreenTop();
-        Point3f screenBottom = this.program.getScreenBottom();
-        
+        Point3f screenTop = program.getScreenTop();
+        Point3f screenBottom = program.getScreenBottom();
+
         for(Hexagon x:map.values()) {
             x.draw(time, HexProgram.getProgram());
         }

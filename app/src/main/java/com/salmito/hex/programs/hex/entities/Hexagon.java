@@ -31,15 +31,13 @@ public class Hexagon implements Thing {
     private float upX = 1f, upY = 0f, upZ = 0f;
     private int i = 0;
     private HexCoord coordinates;
-    private HexProgram program;
 
     public HexCoord getCoordinates() {
         return coordinates;
     }
 
 
-    public Hexagon(HexProgram program, int r, int q) {
-        this.program = program;
+    public Hexagon(int r, int q) {
         this.coordinates = new HexCoord(r, q);
         this.center = new Point3f(coordinates.to_geo(HexProgram.layout));
     }
@@ -93,12 +91,11 @@ public class Hexagon implements Thing {
                     color = flipColor;
                     flipColor = -1;
                 }
-                Matrix.setIdentityM(this.program.getModelMatrix(), 0);
-                Matrix.translateM(this.program.getModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
-                Matrix.rotateM(this.program.getModelMatrix(), 0, rotateAngle, upX, upY, upZ);
-                Matrix.translateM(this.program.getModelMatrix(), 0, -center.getX(), -center.getY(), 0.0f);
+                Matrix.setIdentityM(program.getModelMatrix(), 0);
+                Matrix.translateM(program.getModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
+                Matrix.rotateM(program.getModelMatrix(), 0, rotateAngle, upX, upY, upZ);
+                Matrix.translateM(program.getModelMatrix(), 0, -center.getX(), -center.getY(), 0.0f);
             }
-
         }
 
         getHexCorners(HexProgram.layout);
@@ -110,7 +107,7 @@ public class Hexagon implements Thing {
 //        Matrix.setIdentityM(this.program.getModelMatrix(), 0);
 //        Matrix.translateM(this.program.getModelMatrix(), 0, center.getX(), center.getY(), 0.0f);
         program.drawBuffer(mHexagonVertices, HexColor.getColor(1f,0f,0f,1f), mHexagonIndices, GLES20.GL_LINE_LOOP);
-        Matrix.setIdentityM(this.program.getModelMatrix(), 0);
+        Matrix.setIdentityM(program.getModelMatrix(), 0);
     }
 
     @Override
